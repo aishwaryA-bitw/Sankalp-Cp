@@ -721,7 +721,8 @@ function AccountDataPage() {
               formattedNextTargetDate,     // Column D - Next Target Date
               remarksData[id] || "",       // Column E - Remarks
               imageUrl,                    // Column F - Uploaded Image
-              dateForSubmission.formatted, // Column G - Condition Date
+              // dateForSubmission.formatted, // Column G - Condition Date
+              "",
               username,                    // Column H - Username
               item["col5"] || "",          // Column I - Task Description
               item["col3"] || "",          // Column J - Given By
