@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { BellRing, FileCheck, Calendar } from "lucide-react";
+import { BellRing, FileCheck, Calendar, ChevronDown, Check } from "lucide-react";
 import AdminLayout from "../../components/layout/AdminLayout";
 
 // Calendar Component (defined outside)
@@ -115,6 +115,84 @@ const CalendarComponent = ({ date, onChange, onClose }) => {
   );
 };
 
+// Multi-select dropdown component for doers
+const MultiSelectDropdown = ({ options, selectedValues, onChange, placeholder }) => {
+  const [isOpen, setIsOpen] = useState(false);
+
+  const handleToggle = (value) => {
+    if (selectedValues.includes(value)) {
+      onChange(selectedValues.filter(item => item !== value));
+    } else {
+      onChange([...selectedValues, value]);
+    }
+  };
+
+  const handleSelectAll = () => {
+    if (selectedValues.length === options.length) {
+      onChange([]);
+    } else {
+      onChange([...options]);
+    }
+  };
+
+  return (
+    <div className="relative">
+      <button
+        type="button"
+        onClick={() => setIsOpen(!isOpen)}
+        className="w-full rounded-md border border-purple-200 p-2 focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500 text-left flex justify-between items-center"
+      >
+        <span className="truncate">
+          {selectedValues.length === 0
+            ? placeholder
+            : selectedValues.length === 1
+              ? selectedValues[0]
+              : `${selectedValues.length} doers selected`
+          }
+        </span>
+        <ChevronDown className={`h-4 w-4 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+      </button>
+
+      {isOpen && (
+        <div className="absolute z-10 w-full mt-1 bg-white border border-purple-200 rounded-md shadow-lg max-h-60 overflow-y-auto">
+          {/* Select All Option */}
+          <div
+            className="px-3 py-2 hover:bg-purple-50 cursor-pointer border-b border-gray-200 font-medium text-purple-700"
+            onClick={handleSelectAll}
+          >
+            <div className="flex items-center">
+              <div className={`w-4 h-4 border border-purple-300 rounded flex items-center justify-center mr-2 ${selectedValues.length === options.length ? 'bg-purple-600' : 'bg-white'
+                }`}>
+                {selectedValues.length === options.length && <Check className="h-3 w-3 text-white" />}
+              </div>
+              <span>
+                {selectedValues.length === options.length ? 'Deselect All' : 'Select All'}
+              </span>
+            </div>
+          </div>
+
+          {/* Individual Options */}
+          {options.map((option, index) => (
+            <div
+              key={index}
+              className="px-3 py-2 hover:bg-purple-50 cursor-pointer"
+              onClick={() => handleToggle(option)}
+            >
+              <div className="flex items-center">
+                <div className={`w-4 h-4 border border-purple-300 rounded flex items-center justify-center mr-2 ${selectedValues.includes(option) ? 'bg-purple-600' : 'bg-white'
+                  }`}>
+                  {selectedValues.includes(option) && <Check className="h-3 w-3 text-white" />}
+                </div>
+                <span>{option}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
 // Helper functions for date manipulation
 const formatDate = (date) => {
   return date.toLocaleDateString("en-US", {
@@ -172,7 +250,7 @@ export default function AssignTask() {
   const [formData, setFormData] = useState({
     department: "",
     givenBy: "",
-    doer: "",
+    doers: [], // Changed from single doer to array of doers
     description: "",
     frequency: "daily",
     enableReminders: true,
@@ -182,6 +260,11 @@ export default function AssignTask() {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  // New handler for doers selection
+  const handleDoersChange = (selectedDoers) => {
+    setFormData((prev) => ({ ...prev, doers: selectedDoers }));
   };
 
   const handleSwitchChange = (name, e) => {
@@ -390,10 +473,10 @@ export default function AssignTask() {
     }
   };
 
-  // Updated generateTasks function that only creates tasks for dates in the Working Day Calendar
+  // Updated generateTasks function that creates tasks for each selected doer
   const generateTasks = async () => {
-    if (!date || !formData.doer || !formData.description || !formData.frequency) {
-      alert("Please fill in all required fields.");
+    if (!date || formData.doers.length === 0 || !formData.description || !formData.frequency) {
+      alert("Please fill in all required fields and select at least one doer.");
       return;
     }
 
@@ -439,140 +522,148 @@ export default function AssignTask() {
       alert(`The selected date (${startDateStr}) is not in the Working Day Calendar. The next available working day will be used instead: ${futureDates[0]}`);
     }
 
-    const tasks = [];
+    const allTasks = [];
 
-    // For one-time tasks, just use the first available date
-    if (formData.frequency === "one-time") {
-      const taskDateStr = futureDates[startIndex];
+    // Generate tasks for each selected doer
+    formData.doers.forEach(doer => {
+      const tasksForDoer = [];
 
-      tasks.push({
-        description: formData.description,
-        department: formData.department,
-        givenBy: formData.givenBy,
-        doer: formData.doer,
-        dueDate: taskDateStr,
-        status: "pending",
-        frequency: formData.frequency,
-        enableReminders: formData.enableReminders,
-        requireAttachment: formData.requireAttachment,
-      });
-    } else {
-      // For recurring tasks, find appropriate dates based on frequency
-      let currentIndex = startIndex;
+      // For one-time tasks, just use the first available date
+      if (formData.frequency === "one-time") {
+        const taskDateStr = futureDates[startIndex];
 
-      // We'll use the working days from the calendar instead of generating dates
-      while (currentIndex < futureDates.length) {
-        const taskDateStr = futureDates[currentIndex];
-
-        tasks.push({
+        tasksForDoer.push({
           description: formData.description,
           department: formData.department,
           givenBy: formData.givenBy,
-          doer: formData.doer,
+          doer: doer,
           dueDate: taskDateStr,
           status: "pending",
           frequency: formData.frequency,
           enableReminders: formData.enableReminders,
           requireAttachment: formData.requireAttachment,
         });
+      } else {
+        // For recurring tasks, find appropriate dates based on frequency
+        let currentIndex = startIndex;
 
-        // Determine the next index based on frequency
-        switch (formData.frequency) {
-          case "daily": {
-            currentIndex += 1; // Next working day
-            break;
-          }
-          case "weekly": {
-            // Find a working day approximately 7 calendar days later
-            // FIXED: Updated parsing for DD/MM/YYYY format
-            const [taskDay, taskMonth, taskYear] = taskDateStr.split('/').map(Number);
-            const currentDate = new Date(taskYear, taskMonth - 1, taskDay);
-            const targetDate = addDays(currentDate, 7);
-            const targetDateStr = formatDateToDDMMYYYY(targetDate);
+        // We'll use the working days from the calendar instead of generating dates
+        while (currentIndex < futureDates.length) {
+          const taskDateStr = futureDates[currentIndex];
 
-            // Find the next working day closest to the target date
-            const nextIndex = findClosestWorkingDayIndex(futureDates, targetDateStr);
-            currentIndex = nextIndex > currentIndex ? nextIndex : futureDates.length;
-            break;
-          }
-          case "fortnightly": {
-            // Find a working day approximately 14 calendar days later
-            const [taskDay2, taskMonth2, taskYear2] = taskDateStr.split('/').map(Number);
-            const currentDate2 = new Date(taskYear2, taskMonth2 - 1, taskDay2);
-            const targetDate2 = addDays(currentDate2, 14);
-            const targetDateStr2 = formatDateToDDMMYYYY(targetDate2);
+          tasksForDoer.push({
+            description: formData.description,
+            department: formData.department,
+            givenBy: formData.givenBy,
+            doer: doer,
+            dueDate: taskDateStr,
+            status: "pending",
+            frequency: formData.frequency,
+            enableReminders: formData.enableReminders,
+            requireAttachment: formData.requireAttachment,
+          });
 
-            const nextIndex2 = findClosestWorkingDayIndex(futureDates, targetDateStr2);
-            currentIndex = nextIndex2 > currentIndex ? nextIndex2 : futureDates.length;
-            break;
-          }
-          case "monthly": {
-            // Find a working day approximately 1 month later
-            const [taskDay3, taskMonth3, taskYear3] = taskDateStr.split('/').map(Number);
-            const currentDate3 = new Date(taskYear3, taskMonth3 - 1, taskDay3);
-            const targetDate3 = addMonths(currentDate3, 1);
-            const targetDateStr3 = formatDateToDDMMYYYY(targetDate3);
-
-            const nextIndex3 = findClosestWorkingDayIndex(futureDates, targetDateStr3);
-            currentIndex = nextIndex3 > currentIndex ? nextIndex3 : futureDates.length;
-            break;
-          }
-          case "quarterly": {
-            // Find a working day approximately 3 months later
-            const [taskDay4, taskMonth4, taskYear4] = taskDateStr.split('/').map(Number);
-            const currentDate4 = new Date(taskYear4, taskMonth4 - 1, taskDay4);
-            const targetDate4 = addMonths(currentDate4, 3);
-            const targetDateStr4 = formatDateToDDMMYYYY(targetDate4);
-
-            const nextIndex4 = findClosestWorkingDayIndex(futureDates, targetDateStr4);
-            currentIndex = nextIndex4 > currentIndex ? nextIndex4 : futureDates.length;
-            break;
-          }
-          case "yearly": {
-            // Find a working day approximately 1 year later
-            const [taskDay5, taskMonth5, taskYear5] = taskDateStr.split('/').map(Number);
-            const currentDate5 = new Date(taskYear5, taskMonth5 - 1, taskDay5);
-            const targetDate5 = addYears(currentDate5, 1);
-            const targetDateStr5 = formatDateToDDMMYYYY(targetDate5);
-
-            const nextIndex5 = findClosestWorkingDayIndex(futureDates, targetDateStr5);
-            currentIndex = nextIndex5 > currentIndex ? nextIndex5 : futureDates.length;
-            break;
-          }
-          case "end-of-1st-week":
-          case "end-of-2nd-week":
-          case "end-of-3rd-week":
-          case "end-of-4th-week":
-          case "end-of-last-week": {
-            // These would need special handling based on your calendar's definition of weeks
-            // For now, we'll just move to the next month and find the appropriate week
-            const [taskDay6, taskMonth6, taskYear6] = taskDateStr.split('/').map(Number);
-            const currentDate6 = new Date(taskYear6, taskMonth6 - 1, taskDay6);
-            const targetDate6 = addMonths(currentDate6, 1);
-
-            // Find the appropriate week in the next month
-            let weekNumber;
-            switch (formData.frequency) {
-              case "end-of-1st-week": weekNumber = 1; break;
-              case "end-of-2nd-week": weekNumber = 2; break;
-              case "end-of-3rd-week": weekNumber = 3; break;
-              case "end-of-4th-week": weekNumber = 4; break;
-              case "end-of-last-week": weekNumber = -1; break; // Special case for last week
+          // Determine the next index based on frequency
+          switch (formData.frequency) {
+            case "daily": {
+              currentIndex += 1; // Next working day
+              break;
             }
+            case "weekly": {
+              // Find a working day approximately 7 calendar days later
+              // FIXED: Updated parsing for DD/MM/YYYY format
+              const [taskDay, taskMonth, taskYear] = taskDateStr.split('/').map(Number);
+              const currentDate = new Date(taskYear, taskMonth - 1, taskDay);
+              const targetDate = addDays(currentDate, 7);
+              const targetDateStr = formatDateToDDMMYYYY(targetDate);
 
-            const targetDateStr6 = findEndOfWeekDate(targetDate6, weekNumber, futureDates);
-            const nextIndex6 = futureDates.indexOf(targetDateStr6);
-            currentIndex = nextIndex6 > currentIndex ? nextIndex6 : futureDates.length;
-            break;
-          }
-          default: {
-            currentIndex = futureDates.length; // Exit the loop if frequency is not recognized
+              // Find the next working day closest to the target date
+              const nextIndex = findClosestWorkingDayIndex(futureDates, targetDateStr);
+              currentIndex = nextIndex > currentIndex ? nextIndex : futureDates.length;
+              break;
+            }
+            case "fortnightly": {
+              // Find a working day approximately 14 calendar days later
+              const [taskDay2, taskMonth2, taskYear2] = taskDateStr.split('/').map(Number);
+              const currentDate2 = new Date(taskYear2, taskMonth2 - 1, taskDay2);
+              const targetDate2 = addDays(currentDate2, 14);
+              const targetDateStr2 = formatDateToDDMMYYYY(targetDate2);
+
+              const nextIndex2 = findClosestWorkingDayIndex(futureDates, targetDateStr2);
+              currentIndex = nextIndex2 > currentIndex ? nextIndex2 : futureDates.length;
+              break;
+            }
+            case "monthly": {
+              // Find a working day approximately 1 month later
+              const [taskDay3, taskMonth3, taskYear3] = taskDateStr.split('/').map(Number);
+              const currentDate3 = new Date(taskYear3, taskMonth3 - 1, taskDay3);
+              const targetDate3 = addMonths(currentDate3, 1);
+              const targetDateStr3 = formatDateToDDMMYYYY(targetDate3);
+
+              const nextIndex3 = findClosestWorkingDayIndex(futureDates, targetDateStr3);
+              currentIndex = nextIndex3 > currentIndex ? nextIndex3 : futureDates.length;
+              break;
+            }
+            case "quarterly": {
+              // Find a working day approximately 3 months later
+              const [taskDay4, taskMonth4, taskYear4] = taskDateStr.split('/').map(Number);
+              const currentDate4 = new Date(taskYear4, taskMonth4 - 1, taskDay4);
+              const targetDate4 = addMonths(currentDate4, 3);
+              const targetDateStr4 = formatDateToDDMMYYYY(targetDate4);
+
+              const nextIndex4 = findClosestWorkingDayIndex(futureDates, targetDateStr4);
+              currentIndex = nextIndex4 > currentIndex ? nextIndex4 : futureDates.length;
+              break;
+            }
+            case "yearly": {
+              // Find a working day approximately 1 year later
+              const [taskDay5, taskMonth5, taskYear5] = taskDateStr.split('/').map(Number);
+              const currentDate5 = new Date(taskYear5, taskMonth5 - 1, taskDay5);
+              const targetDate5 = addYears(currentDate5, 1);
+              const targetDateStr5 = formatDateToDDMMYYYY(targetDate5);
+
+              const nextIndex5 = findClosestWorkingDayIndex(futureDates, targetDateStr5);
+              currentIndex = nextIndex5 > currentIndex ? nextIndex5 : futureDates.length;
+              break;
+            }
+            case "end-of-1st-week":
+            case "end-of-2nd-week":
+            case "end-of-3rd-week":
+            case "end-of-4th-week":
+            case "end-of-last-week": {
+              // These would need special handling based on your calendar's definition of weeks
+              // For now, we'll just move to the next month and find the appropriate week
+              const [taskDay6, taskMonth6, taskYear6] = taskDateStr.split('/').map(Number);
+              const currentDate6 = new Date(taskYear6, taskMonth6 - 1, taskDay6);
+              const targetDate6 = addMonths(currentDate6, 1);
+
+              // Find the appropriate week in the next month
+              let weekNumber;
+              switch (formData.frequency) {
+                case "end-of-1st-week": weekNumber = 1; break;
+                case "end-of-2nd-week": weekNumber = 2; break;
+                case "end-of-3rd-week": weekNumber = 3; break;
+                case "end-of-4th-week": weekNumber = 4; break;
+                case "end-of-last-week": weekNumber = -1; break; // Special case for last week
+              }
+
+              const targetDateStr6 = findEndOfWeekDate(targetDate6, weekNumber, futureDates);
+              const nextIndex6 = futureDates.indexOf(targetDateStr6);
+              currentIndex = nextIndex6 > currentIndex ? nextIndex6 : futureDates.length;
+              break;
+            }
+            default: {
+              currentIndex = futureDates.length; // Exit the loop if frequency is not recognized
+            }
           }
         }
       }
-    }
 
-    setGeneratedTasks(tasks);
+      // Add all tasks for this doer to the overall task list
+      allTasks.push(...tasksForDoer);
+    });
+
+    setGeneratedTasks(allTasks);
     setAccordionOpen(true);
   };
 
@@ -732,7 +823,7 @@ export default function AssignTask() {
       setFormData({
         department: "",
         givenBy: "",
-        doer: "",
+        doers: [], // Reset to empty array
         description: "",
         frequency: "daily",
         enableReminders: true,
@@ -768,7 +859,7 @@ export default function AssignTask() {
                 Task Details
               </h2>
               <p className="text-purple-600">
-                Fill in the details to assign a new task to a staff member.
+                Fill in the details to assign a new task to staff members.
               </p>
             </div>
             <div className="p-6 space-y-4">
@@ -822,29 +913,39 @@ export default function AssignTask() {
                 </select>
               </div>
 
-              {/* Doer's Name Dropdown */}
+              {/* Multi-Select Doers Dropdown */}
               <div className="space-y-2">
                 <label
-                  htmlFor="doer"
+                  htmlFor="doers"
                   className="block text-sm font-medium text-purple-700"
                 >
-                  Doer's Name
+                  Doer's Names <span className="text-sm text-purple-500">(Select multiple doers)</span>
                 </label>
-                <select
-                  id="doer"
-                  name="doer"
-                  value={formData.doer}
-                  onChange={handleChange}
-                  required
-                  className="w-full rounded-md border border-purple-200 p-2 focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
-                >
-                  <option value="">Select Doer</option>
-                  {doerOptions.map((doer, index) => (
-                    <option key={index} value={doer}>
-                      {doer}
-                    </option>
-                  ))}
-                </select>
+                <MultiSelectDropdown
+                  options={doerOptions}
+                  selectedValues={formData.doers}
+                  onChange={handleDoersChange}
+                  placeholder="Select doers"
+                />
+                {formData.doers.length > 0 && (
+                  <div className="flex flex-wrap gap-2 mt-2">
+                    {formData.doers.map((doer, index) => (
+                      <span
+                        key={index}
+                        className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-purple-100 text-purple-700"
+                      >
+                        {doer}
+                        <button
+                          type="button"
+                          onClick={() => handleDoersChange(formData.doers.filter(d => d !== doer))}
+                          className="ml-1 text-purple-500 hover:text-purple-700"
+                        >
+                          ×
+                        </button>
+                      </span>
+                    ))}
+                  </div>
+                )}
               </div>
 
               {/* Description */}
@@ -1001,7 +1102,7 @@ export default function AssignTask() {
                         className="w-full flex justify-between items-center p-4 text-purple-700 hover:bg-purple-50 focus:outline-none"
                       >
                         <span className="font-medium">
-                          {generatedTasks.length} Tasks Generated
+                          {generatedTasks.length} Tasks Generated for {formData.doers.length} Doer(s)
                           {formData.frequency === "one-time"
                             ? " (Will be stored in DELEGATION sheet)"
                             : " (Will be stored in Checklist sheet)"
@@ -1035,7 +1136,7 @@ export default function AssignTask() {
                                   {task.description}
                                 </div>
                                 <div className="text-xs text-purple-600">
-                                  Due: {formatDateForDisplay(task.dueDate)} | Department: {task.department}
+                                  Due: {formatDateForDisplay(task.dueDate)} | Doer: {task.doer} | Department: {task.department}
                                 </div>
                                 <div className="flex space-x-2 mt-1">
                                   {task.enableReminders && (
@@ -1074,7 +1175,7 @@ export default function AssignTask() {
                   setFormData({
                     department: "",
                     givenBy: "",
-                    doer: "",
+                    doers: [], // Reset to empty array
                     description: "",
                     frequency: "daily",
                     enableReminders: true,
@@ -1093,7 +1194,7 @@ export default function AssignTask() {
                 disabled={isSubmitting}
                 className="rounded-md bg-gradient-to-r from-purple-600 to-pink-600 py-2 px-4 text-white hover:from-purple-700 hover:to-pink-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {isSubmitting ? "Assigning..." : "Assign Task"}
+                {isSubmitting ? "Assigning..." : "Assign Tasks"}
               </button>
             </div>
           </form>
