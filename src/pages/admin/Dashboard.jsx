@@ -828,10 +828,10 @@ export default function AdminDashboard() {
             </div>
             <div className="p-4">
               <div className="text-3xl font-bold text-blue-700">
-                {departmentData.totalTasks}
+                {getTasksByView("recent").length + getTasksByView("overdue").length}
               </div>
               <p className="text-xs text-blue-600">
-                All tasks including future dates
+                Total Tasks (Till date)
               </p>
             </div>
           </div>
@@ -853,26 +853,26 @@ export default function AdminDashboard() {
             </div>
           </div>
 
-          <div className="rounded-lg border border-l-4 border-l-amber-500 shadow-md hover:shadow-lg transition-all bg-white">
-            <div className="flex flex-row items-center justify-between space-y-0 pb-2 bg-gradient-to-r from-amber-50 to-amber-100 rounded-tr-lg p-4">
-              <h3 className="text-sm font-medium text-amber-700">
-                {dashboardType === "delegation" ? "Completed Twice" : "Pending Tasks"}
-              </h3>
-              {dashboardType === "delegation" ? (
-                <CheckCircle2 className="h-4 w-4 text-amber-500" />
-              ) : (
-                <Clock className="h-4 w-4 text-amber-500" />
-              )}
-            </div>
-            <div className="p-4">
-              <div className="text-3xl font-bold text-amber-700">
-                {dashboardType === "delegation" ? departmentData.completedRatingTwo : departmentData.pendingTasks}
-              </div>
-              <p className="text-xs text-amber-600">
-                {dashboardType === "delegation" ? "Tasks completed twice" : "All pending tasks (including future)"}
-              </p>
-            </div>
-          </div>
+            <div className="rounded-lg border border-l-4 border-l-amber-500 shadow-md hover:shadow-lg transition-all bg-white">
+    <div className="flex flex-row items-center justify-between space-y-0 pb-2 bg-gradient-to-r from-amber-50 to-amber-100 rounded-tr-lg p-4">
+      <h3 className="text-sm font-medium text-amber-700">
+        {dashboardType === "delegation" ? "Completed Twice" : "Pending Tasks"}
+      </h3>
+      {dashboardType === "delegation" ? (
+        <CheckCircle2 className="h-4 w-4 text-amber-500" />
+      ) : (
+        <Clock className="h-4 w-4 text-amber-500" />
+      )}
+    </div>
+    <div className="p-4">
+      <div className="text-3xl font-bold text-amber-700">
+        {dashboardType === "delegation" ? departmentData.completedRatingTwo : getTasksByView("recent").length}
+      </div>
+      <p className="text-xs text-amber-600">
+        {dashboardType === "delegation" ? "Tasks completed twice" : "Pending Data (Today)"}
+      </p>
+    </div>
+  </div>
 
           <div className="rounded-lg border border-l-4 border-l-red-500 shadow-md hover:shadow-lg transition-all bg-white">
             <div className="flex flex-row items-center justify-between space-y-0 pb-2 bg-gradient-to-r from-red-50 to-red-100 rounded-tr-lg p-4">

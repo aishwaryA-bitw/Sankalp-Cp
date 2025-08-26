@@ -14,6 +14,7 @@ import Score from "./pages/Score"
 import TrainingVideo from "./pages/TrainingVideo"
 import License from "./pages/License"
 import "./index.css"
+import QuickTask from "./pages/QuickTask"
 // import AdminLayout from "./components/layout/AdminLayout"
 
 // Auth wrapper component to protect routes
@@ -83,6 +84,15 @@ function App() {
             </ProtectedRoute>
           }
         />
+
+        <Route
+        path="/dashboard/QuickTask"
+        element={
+          <ProtectedRoute>
+            <QuickTask />
+          </ProtectedRoute>
+        }
+         />
 
         {/* Assign Task route - only for admin */}
         <Route

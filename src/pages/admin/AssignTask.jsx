@@ -223,9 +223,7 @@ const addYears = (date, years) => {
 export default function AssignTask() {
   const [date, setSelectedDate] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [generatedTasks, setGeneratedTasks] = useState([]);
   const [showCalendar, setShowCalendar] = useState(false);
-  const [accordionOpen, setAccordionOpen] = useState(false);
 
   // Add new state variables for dropdown options
   const [departmentOptions, setDepartmentOptions] = useState([]);
@@ -476,15 +474,13 @@ export default function AssignTask() {
   // Updated generateTasks function that creates tasks for each selected doer
   const generateTasks = async () => {
     if (!date || formData.doers.length === 0 || !formData.description || !formData.frequency) {
-      alert("Please fill in all required fields and select at least one doer.");
-      return;
+      return [];
     }
 
     // Fetch working days from the sheet
     const workingDays = await fetchWorkingDays();
     if (workingDays.length === 0) {
-      alert("Could not retrieve working days. Please make sure the Working Day Calendar sheet is properly set up.");
-      return;
+      throw new Error("Could not retrieve working days. Please make sure the Working Day Calendar sheet is properly set up.");
     }
 
     // Sort the working days chronologically
@@ -508,8 +504,7 @@ export default function AssignTask() {
 
     // If no future working days are available from the selected date
     if (futureDates.length === 0) {
-      alert("No working days found on or after your selected date. Please choose a different start date or update the Working Day Calendar.");
-      return;
+      throw new Error("No working days found on or after your selected date. Please choose a different start date or update the Working Day Calendar.");
     }
 
     // Find the start date in working days
@@ -519,7 +514,6 @@ export default function AssignTask() {
     // If the exact start date isn't found, use the next available working day
     if (startIndex === -1) {
       startIndex = 0; // Use the first available future working day
-      alert(`The selected date (${startDateStr}) is not in the Working Day Calendar. The next available working day will be used instead: ${futureDates[0]}`);
     }
 
     const allTasks = [];
@@ -663,8 +657,7 @@ export default function AssignTask() {
       allTasks.push(...tasksForDoer);
     });
 
-    setGeneratedTasks(allTasks);
-    setAccordionOpen(true);
+    return allTasks;
   };
 
   // Helper function to find the closest working day to a target date
@@ -763,14 +756,23 @@ export default function AssignTask() {
     }
   };
 
-  // Updated handleSubmit function with proper sheet selection logic
+  // Updated handleSubmit function with direct task generation and submission
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
 
     try {
+      if (!date || formData.doers.length === 0 || !formData.description || !formData.frequency) {
+        alert("Please fill in all required fields and select at least one doer.");
+        setIsSubmitting(false);
+        return;
+      }
+
+      // Generate tasks directly
+      const generatedTasks = await generateTasks();
+
       if (generatedTasks.length === 0) {
-        alert("Please generate tasks first by clicking Preview Generated Tasks");
+        alert("No tasks could be generated. Please check your inputs.");
         setIsSubmitting(false);
         return;
       }
@@ -817,7 +819,7 @@ export default function AssignTask() {
       );
 
       // Show a success message with the appropriate sheet name
-      alert(`Successfully submitted ${generatedTasks.length} tasks to ${submitSheetName} sheet in one batch!`);
+      alert(`Successfully submitted ${generatedTasks.length} tasks to ${submitSheetName} sheet!`);
 
       // Reset form
       setFormData({
@@ -830,20 +832,12 @@ export default function AssignTask() {
         requireAttachment: false
       });
       setSelectedDate(null);
-      setGeneratedTasks([]);
-      setAccordionOpen(false);
     } catch (error) {
       console.error("Submission error:", error);
-      alert("Failed to assign tasks. Please try again.");
+      alert(error.message || "Failed to assign tasks. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
-  };
-
-  // FIXED: Helper function to format date for display in preview (same as storage format now)
-  const formatDateForDisplay = (dateStr) => {
-    // Since we're now using DD/MM/YYYY for both storage and display, just return as is
-    return dateStr;
   };
 
   return (
@@ -1082,90 +1076,6 @@ export default function AssignTask() {
                   </div>
                 </div>
               </div>
-
-              {/* Preview and Submit Buttons */}
-              <div className="space-y-4">
-                <button
-                  type="button"
-                  onClick={generateTasks}
-                  className="w-full rounded-md border border-purple-200 bg-purple-50 py-2 px-4 text-purple-700 hover:bg-purple-100 hover:border-purple-300 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
-                >
-                  Preview Generated Tasks
-                </button>
-
-                {generatedTasks.length > 0 && (
-                  <div className="w-full">
-                    <div className="border border-purple-200 rounded-md">
-                      <button
-                        type="button"
-                        onClick={() => setAccordionOpen(!accordionOpen)}
-                        className="w-full flex justify-between items-center p-4 text-purple-700 hover:bg-purple-50 focus:outline-none"
-                      >
-                        <span className="font-medium">
-                          {generatedTasks.length} Tasks Generated for {formData.doers.length} Doer(s)
-                          {formData.frequency === "one-time"
-                            ? " (Will be stored in DELEGATION sheet)"
-                            : " (Will be stored in Checklist sheet)"
-                          }
-                        </span>
-                        <svg
-                          className={`w-5 h-5 transition-transform ${accordionOpen ? "rotate-180" : ""
-                            }`}
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M19 9l-7 7-7-7"
-                          />
-                        </svg>
-                      </button>
-
-                      {accordionOpen && (
-                        <div className="p-4 border-t border-purple-200">
-                          <div className="max-h-60 overflow-y-auto space-y-2">
-                            {generatedTasks.slice(0, 20).map((task, index) => (
-                              <div
-                                key={index}
-                                className="text-sm p-2 border rounded-md border-purple-200 bg-purple-50"
-                              >
-                                <div className="font-medium text-purple-700">
-                                  {task.description}
-                                </div>
-                                <div className="text-xs text-purple-600">
-                                  Due: {formatDateForDisplay(task.dueDate)} | Doer: {task.doer} | Department: {task.department}
-                                </div>
-                                <div className="flex space-x-2 mt-1">
-                                  {task.enableReminders && (
-                                    <span className="inline-flex items-center text-xs bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded">
-                                      <BellRing className="h-3 w-3 mr-1" />{" "}
-                                      Reminders
-                                    </span>
-                                  )}
-                                  {task.requireAttachment && (
-                                    <span className="inline-flex items-center text-xs bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded">
-                                      <FileCheck className="h-3 w-3 mr-1" />{" "}
-                                      Attachment Required
-                                    </span>
-                                  )}
-                                </div>
-                              </div>
-                            ))}
-                            {generatedTasks.length > 20 && (
-                              <div className="text-sm text-center text-purple-600 py-2">
-                                ...and {generatedTasks.length - 20} more tasks
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                )}
-              </div>
             </div>
 
             <div className="flex justify-between bg-gradient-to-r from-purple-50 to-pink-50 p-6 border-t border-purple-100">
@@ -1182,8 +1092,6 @@ export default function AssignTask() {
                     requireAttachment: false,
                   });
                   setSelectedDate(null);
-                  setGeneratedTasks([]);
-                  setAccordionOpen(false);
                 }}
                 className="rounded-md border border-purple-200 py-2 px-4 text-purple-700 hover:border-purple-300 hover:bg-purple-100 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
               >

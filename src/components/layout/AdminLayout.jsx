@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { Link, useLocation, useNavigate } from "react-router-dom"
-import { CheckSquare, ClipboardList, Home, LogOut, Menu, Database, ChevronDown, ChevronRight , CalendarCheck , Star, KeyRound, Video } from 'lucide-react'
+import { CheckSquare, ClipboardList, Zap, LogOut, Menu, Database, ChevronDown, ChevronRight , CalendarCheck , Star, KeyRound, Video } from 'lucide-react'
 
 export default function AdminLayout({ children, darkMode, toggleDarkMode }) {
   const location = useLocation()
@@ -72,6 +72,13 @@ export default function AdminLayout({ children, darkMode, toggleDarkMode }) {
       icon: Database,
       active: location.pathname === "/dashboard/admin",
       showFor: ["admin", "user"] // Show for both roles
+    },
+    {
+      href: "/dashboard/QuickTask",
+      label: "QuickTask",
+      icon: Zap,
+      active: location.pathname === "/dashboard/QuickTask",
+      showFor: ["admin", "user"] // show both
     },
     {
       href: "/dashboard/assign-task",
