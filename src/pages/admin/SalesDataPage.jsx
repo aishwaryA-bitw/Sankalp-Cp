@@ -859,55 +859,60 @@ function AccountDataPage() {
     <AdminLayout>
       <div className="min-h-screen bg-gray-50">
         {/* STICKY HEADER SECTION */}
-        <div className="sticky top-0 z-50 bg-white border-b border-gray-200 shadow-sm">
-          <div className="px-4 py-4 sm:px-6 lg:px-8">
-            <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
-              <h1 className="text-2xl font-bold tracking-tight text-purple-700">
-                {showHistory ? CONFIG.PAGE_CONFIG.historyTitle : CONFIG.PAGE_CONFIG.title}
-              </h1>
+      <div className="bg-white border-b border-gray-200 shadow-sm">
+  <div className="px-4 py-4 sm:px-6 lg:px-8">
+    {/* mobile-first layout */}
+    <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+      <h1 className="text-2xl font-bold tracking-tight text-purple-700">
+        {showHistory ? CONFIG.PAGE_CONFIG.historyTitle : CONFIG.PAGE_CONFIG.title}
+      </h1>
 
-              <div className="flex space-x-4">
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
-                  <input
-                    type="text"
-                    placeholder={showHistory ? "Search history..." : "Search tasks..."}
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10 pr-4 py-2 border border-purple-200 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
-                  />
-                </div>
-
-                <button
-                  onClick={toggleHistory}
-                  className="rounded-md bg-gradient-to-r from-blue-500 to-indigo-600 py-2 px-4 text-white hover:from-blue-600 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-                >
-                  {showHistory ? (
-                    <div className="flex items-center">
-                      <ArrowLeft className="h-4 w-4 mr-1" />
-                      <span>Back to Tasks</span>
-                    </div>
-                  ) : (
-                    <div className="flex items-center">
-                      <History className="h-4 w-4 mr-1" />
-                      <span>View History</span>
-                    </div>
-                  )}
-                </button>
-
-                {!showHistory && (
-                  <button
-                    onClick={handleSubmit}
-                    disabled={selectedItemsCount === 0 || isSubmitting}
-                    className="rounded-md bg-gradient-to-r from-purple-600 to-pink-600 py-2 px-4 text-white hover:from-purple-700 hover:to-pink-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    {isSubmitting ? "Processing..." : `Submit Selected (${selectedItemsCount})`}
-                  </button>
-                )}
-              </div>
-            </div>
-          </div>
+      <div className="flex flex-col gap-3 sm:flex-row sm:space-x-4">
+        {/* Search */}
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
+          <input
+            type="text"
+            placeholder={showHistory ? 'Search history...' : 'Search tasks...'}
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="pl-10 pr-4 py-2 border border-purple-200 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 w-full"
+          />
         </div>
+
+        {/* Toggle history */}
+        <button
+          onClick={toggleHistory}
+          className="rounded-md bg-gradient-to-r from-blue-500 to-indigo-600 py-2 px-4 text-white hover:from-blue-600 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 w-full sm:w-auto"
+        >
+          {showHistory ? (
+            <div className="flex items-center justify-center">
+              <ArrowLeft className="h-4 w-4 mr-1" />
+              <span>Back to Tasks</span>
+            </div>
+          ) : (
+            <div className="flex items-center justify-center">
+              <History className="h-4 w-4 mr-1" />
+              <span>View History</span>
+            </div>
+          )}
+        </button>
+
+        {/* Submit button only when not history */}
+        {!showHistory && (
+          <button
+            onClick={handleSubmit}
+            disabled={selectedItemsCount === 0 || isSubmitting}
+            className="rounded-md bg-gradient-to-r from-purple-600 to-pink-600 py-2 px-4 text-white hover:from-purple-700 hover:to-pink-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed w-full sm:w-auto"
+          >
+            {isSubmitting ? 'Processing...' : `Submit Selected (${selectedItemsCount})`}
+          </button>
+        )}
+      </div>
+    </div>
+  </div>
+</div>
+
 
         {/* MAIN CONTENT SECTION - SCROLLABLE */}
         <div className="px-4 py-6 sm:px-6 lg:px-8">

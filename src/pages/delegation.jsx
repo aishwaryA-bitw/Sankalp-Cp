@@ -1,6 +1,6 @@
 "use client"
 import { useState, useEffect, useCallback, useMemo } from "react"
-import { CheckCircle2, Upload, X, Search, History, ArrowLeft } from "lucide-react"
+import { CheckCircle2, Upload, X, Search, History, ArrowLeft, Download } from "lucide-react"
 import AdminLayout from "../components/layout/AdminLayout"
 
 // Configuration object - Move all configurations here
@@ -71,6 +71,35 @@ function DelegationDataPage() {
     return `${day}/${month}/${year}`
   }, [])
 
+
+
+  // Simplified export function
+  const exportToCSV = () => {
+    try {
+      if (!filteredAccountData || filteredAccountData.length === 0) {
+        alert("No data available to export");
+        return;
+      }
+
+      // Simple CSV creation logic
+      const headers = "Task ID,Department,Given By,Name,Task Description,Task Start Date,Planned Date\n";
+      const rows = filteredAccountData.map(item =>
+        `"${item.col1 || ''}","${item.col2 || ''}","${item.col3 || ''}","${item.col4 || ''}","${item.col5 || ''}","${formatDateForDisplay(item.col6)}","${formatDateForDisplay(item.col10)}"`
+      ).join("\n");
+
+      const csvContent = headers + rows;
+      const encodedUri = encodeURI("data:text/csv;charset=utf-8," + csvContent);
+      const link = document.createElement("a");
+      link.setAttribute("href", encodedUri);
+      link.setAttribute("download", "delegation_tasks.csv");
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (error) {
+      console.error("Error exporting CSV:", error);
+      alert("Error exporting data: " + error.message);
+    }
+  };
   // NEW: Function to create a proper date object for Google Sheets
   const createGoogleSheetsDate = useCallback((date) => {
     // Return a Date object that Google Sheets can properly interpret
@@ -131,6 +160,13 @@ function DelegationDataPage() {
     setUserRole(role || "")
     setUsername(user || "")
   }, [])
+
+
+
+
+
+
+
 
   const parseGoogleSheetsDate = useCallback(
     (dateStr) => {
@@ -731,55 +767,64 @@ function DelegationDataPage() {
     <AdminLayout>
       <div className="min-h-screen bg-gray-50">
         {/* STICKY HEADER SECTION */}
-        <div className="sticky top-0 z-50 bg-white border-b border-gray-200 shadow-sm">
-          <div className="px-4 py-4 sm:px-6 lg:px-8">
-            <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
-              <h1 className="text-2xl font-bold tracking-tight text-purple-700">
-                {showHistory ? CONFIG.PAGE_CONFIG.historyTitle : CONFIG.PAGE_CONFIG.title}
-              </h1>
+  <div className="bg-white border-b border-gray-200 shadow-sm">
+  <div className="px-4 py-4 sm:px-6 lg:px-8">
+    <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      
+      {/* Title */}
+      <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-purple-700 text-center sm:text-left">
+        {showHistory ? CONFIG.PAGE_CONFIG.historyTitle : CONFIG.PAGE_CONFIG.title}
+      </h1>
 
-              <div className="flex space-x-4">
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
-                  <input
-                    type="text"
-                    placeholder={showHistory ? "Search by Task ID..." : "Search tasks..."}
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10 pr-4 py-2 border border-purple-200 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
-                  />
-                </div>
-
-                <button
-                  onClick={toggleHistory}
-                  className="rounded-md bg-gradient-to-r from-blue-500 to-indigo-600 py-2 px-4 text-white hover:from-blue-600 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-                >
-                  {showHistory ? (
-                    <div className="flex items-center">
-                      <ArrowLeft className="h-4 w-4 mr-1" />
-                      <span>Back to Tasks</span>
-                    </div>
-                  ) : (
-                    <div className="flex items-center">
-                      <History className="h-4 w-4 mr-1" />
-                      <span>View History</span>
-                    </div>
-                  )}
-                </button>
-
-                {!showHistory && (
-                  <button
-                    onClick={handleSubmit}
-                    disabled={selectedItemsCount === 0 || isSubmitting}
-                    className="rounded-md bg-gradient-to-r from-purple-600 to-pink-600 py-2 px-4 text-white hover:from-purple-700 hover:to-pink-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    {isSubmitting ? "Processing..." : `Submit Selected (${selectedItemsCount})`}
-                  </button>
-                )}
-              </div>
-            </div>
-          </div>
+      {/* Actions */}
+      <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 w-full sm:w-auto">
+        
+        {/* Search input */}
+        <div className="relative w-full sm:w-64">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
+          <input
+            type="text"
+            placeholder={showHistory ? "Search by Task ID..." : "Search tasks..."}
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full pl-10 pr-4 py-2 border border-purple-200 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+          />
         </div>
+
+        {/* History toggle button */}
+        <button
+          onClick={toggleHistory}
+          className="rounded-md bg-gradient-to-r from-blue-500 to-indigo-600 py-2 px-4 text-white hover:from-blue-600 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 w-full sm:w-auto"
+        >
+          {showHistory ? (
+            <div className="flex items-center justify-center">
+              <ArrowLeft className="h-4 w-4 mr-1" />
+              <span>Back to Tasks</span>
+            </div>
+          ) : (
+            <div className="flex items-center justify-center">
+              <History className="h-4 w-4 mr-1" />
+              <span>View History</span>
+            </div>
+          )}
+        </button>
+
+        {/* Submit button */}
+        {!showHistory && (
+          <button
+            onClick={handleSubmit}
+            disabled={selectedItemsCount === 0 || isSubmitting}
+            className="rounded-md bg-gradient-to-r from-purple-600 to-pink-600 py-2 px-4 text-white hover:from-purple-700 hover:to-pink-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed w-full sm:w-auto"
+          >
+            {isSubmitting ? "Processing..." : `Submit Selected (${selectedItemsCount})`}
+          </button>
+        )}
+      </div>
+    </div>
+  </div>
+</div>
+
+
 
         {/* MAIN CONTENT SECTION - SCROLLABLE */}
         <div className="px-4 py-6 sm:px-6 lg:px-8">
@@ -795,19 +840,45 @@ function DelegationDataPage() {
             </div>
           )}
 
+
           <div className="rounded-lg border border-purple-200 shadow-md bg-white overflow-hidden">
-            <div className="bg-gradient-to-r from-purple-50 to-pink-50 border-b border-purple-100 p-4">
-              <h2 className="text-purple-700 font-medium">
-                {showHistory
-                  ? `Completed ${CONFIG.SOURCE_SHEET_NAME} Tasks`
-                  : `Pending ${CONFIG.SOURCE_SHEET_NAME} Tasks`}
-              </h2>
-              <p className="text-purple-600 text-sm">
-                {showHistory
-                  ? `${CONFIG.PAGE_CONFIG.historyDescription} for ${userRole === "admin" ? "all" : "your"} tasks`
-                  : CONFIG.PAGE_CONFIG.description}
-              </p>
-            </div>
+
+  <div className="bg-gradient-to-r from-purple-50 to-pink-50 border-b border-purple-100 p-4">
+  {/* row */}
+  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+    
+    {/* Left side text */}
+    <div>
+      <h2 className="text-purple-700 font-medium">
+        {showHistory
+          ? `Completed ${CONFIG.SOURCE_SHEET_NAME} Tasks`
+          : `Pending ${CONFIG.SOURCE_SHEET_NAME} Tasks`}
+      </h2>
+      <p className="text-purple-600 text-sm">
+        {showHistory
+          ? `${CONFIG.PAGE_CONFIG.historyDescription} for ${
+              userRole === 'admin' ? 'all' : 'your'
+            } tasks`
+          : CONFIG.PAGE_CONFIG.description}
+      </p>
+    </div>
+
+    {/* Right side button */}
+    <button
+      onClick={exportToCSV}
+      disabled={filteredAccountData.length === 0}
+      className="rounded-md bg-gradient-to-r from-green-600 to-teal-600 py-2 px-4 text-white hover:from-green-700 hover:to-teal-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center w-full sm:w-auto"
+    >
+      <Download className="h-4 w-4 mr-1" />
+      <span>Export CSV</span>
+    </button>
+  </div>
+</div>
+
+
+
+
+
 
             {loading ? (
               <div className="text-center py-10">
@@ -926,10 +997,10 @@ function DelegationDataPage() {
                             <td className="px-6 py-4 whitespace-nowrap">
                               <span
                                 className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${history["col2"] === "Done"
-                                    ? "bg-green-100 text-green-800"
-                                    : history["col2"] === "Extend date"
-                                      ? "bg-yellow-100 text-yellow-800"
-                                      : "bg-gray-100 text-gray-800"
+                                  ? "bg-green-100 text-green-800"
+                                  : history["col2"] === "Extend date"
+                                    ? "bg-yellow-100 text-yellow-800"
+                                    : "bg-gray-100 text-gray-800"
                                   }`}
                               >
                                 {history["col2"] || "—"}
@@ -991,6 +1062,10 @@ function DelegationDataPage() {
             ) : (
               /* Regular Tasks Table */
               <div className="overflow-x-auto">
+                <div className="flex justify-between items-center mb-4 px-6 pt-4">
+                  <h3 className="text-lg font-semibold text-gray-700">Pending Tasks</h3>
+
+                </div>
                 <table className="min-w-full divide-y divide-gray-200">
                   <thead className="bg-gray-50">
                     <tr>
@@ -1181,8 +1256,8 @@ function DelegationDataPage() {
                               ) : (
                                 <label
                                   className={`flex items-center cursor-pointer ${account["col9"]?.toUpperCase() === "YES"
-                                      ? "text-red-600 font-medium"
-                                      : "text-purple-600"
+                                    ? "text-red-600 font-medium"
+                                    : "text-purple-600"
                                     } hover:text-purple-800`}
                                 >
                                   <Upload className="h-4 w-4 mr-1" />
