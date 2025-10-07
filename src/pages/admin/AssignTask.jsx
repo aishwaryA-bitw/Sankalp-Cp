@@ -1,5 +1,11 @@
 import { useState, useEffect } from "react";
-import { BellRing, FileCheck, Calendar, ChevronDown, Check } from "lucide-react";
+import {
+  BellRing,
+  FileCheck,
+  Calendar,
+  ChevronDown,
+  Check,
+} from "lucide-react";
 import AdminLayout from "../../components/layout/AdminLayout";
 
 // Calendar Component (defined outside)
@@ -53,10 +59,11 @@ const CalendarComponent = ({ date, onChange, onClose }) => {
           key={day}
           type="button"
           onClick={() => handleDateClick(day)}
-          className={`h-8 w-8 rounded-full flex items-center justify-center text-sm ${isSelected
-            ? "bg-purple-600 text-white"
-            : "hover:bg-purple-100 text-gray-700"
-            }`}
+          className={`h-8 w-8 rounded-full flex items-center justify-center text-sm ${
+            isSelected
+              ? "bg-purple-600 text-white"
+              : "hover:bg-purple-100 text-gray-700"
+          }`}
         >
           {day}
         </button>
@@ -116,12 +123,17 @@ const CalendarComponent = ({ date, onChange, onClose }) => {
 };
 
 // Multi-select dropdown component for doers
-const MultiSelectDropdown = ({ options, selectedValues, onChange, placeholder }) => {
+const MultiSelectDropdown = ({
+  options,
+  selectedValues,
+  onChange,
+  placeholder,
+}) => {
   const [isOpen, setIsOpen] = useState(false);
 
   const handleToggle = (value) => {
     if (selectedValues.includes(value)) {
-      onChange(selectedValues.filter(item => item !== value));
+      onChange(selectedValues.filter((item) => item !== value));
     } else {
       onChange([...selectedValues, value]);
     }
@@ -146,11 +158,14 @@ const MultiSelectDropdown = ({ options, selectedValues, onChange, placeholder })
           {selectedValues.length === 0
             ? placeholder
             : selectedValues.length === 1
-              ? selectedValues[0]
-              : `${selectedValues.length} doers selected`
-          }
+            ? selectedValues[0]
+            : `${selectedValues.length} doers selected`}
         </span>
-        <ChevronDown className={`h-4 w-4 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+        <ChevronDown
+          className={`h-4 w-4 transition-transform ${
+            isOpen ? "rotate-180" : ""
+          }`}
+        />
       </button>
 
       {isOpen && (
@@ -161,12 +176,21 @@ const MultiSelectDropdown = ({ options, selectedValues, onChange, placeholder })
             onClick={handleSelectAll}
           >
             <div className="flex items-center">
-              <div className={`w-4 h-4 border border-purple-300 rounded flex items-center justify-center mr-2 ${selectedValues.length === options.length ? 'bg-purple-600' : 'bg-white'
-                }`}>
-                {selectedValues.length === options.length && <Check className="h-3 w-3 text-white" />}
+              <div
+                className={`w-4 h-4 border border-purple-300 rounded flex items-center justify-center mr-2 ${
+                  selectedValues.length === options.length
+                    ? "bg-purple-600"
+                    : "bg-white"
+                }`}
+              >
+                {selectedValues.length === options.length && (
+                  <Check className="h-3 w-3 text-white" />
+                )}
               </div>
               <span>
-                {selectedValues.length === options.length ? 'Deselect All' : 'Select All'}
+                {selectedValues.length === options.length
+                  ? "Deselect All"
+                  : "Select All"}
               </span>
             </div>
           </div>
@@ -179,9 +203,16 @@ const MultiSelectDropdown = ({ options, selectedValues, onChange, placeholder })
               onClick={() => handleToggle(option)}
             >
               <div className="flex items-center">
-                <div className={`w-4 h-4 border border-purple-300 rounded flex items-center justify-center mr-2 ${selectedValues.includes(option) ? 'bg-purple-600' : 'bg-white'
-                  }`}>
-                  {selectedValues.includes(option) && <Check className="h-3 w-3 text-white" />}
+                <div
+                  className={`w-4 h-4 border border-purple-300 rounded flex items-center justify-center mr-2 ${
+                    selectedValues.includes(option)
+                      ? "bg-purple-600"
+                      : "bg-white"
+                  }`}
+                >
+                  {selectedValues.includes(option) && (
+                    <Check className="h-3 w-3 text-white" />
+                  )}
                 </div>
                 <span>{option}</span>
               </div>
@@ -248,9 +279,10 @@ export default function AssignTask() {
   const [formData, setFormData] = useState({
     department: "",
     givenBy: "",
-    doers: [], // Changed from single doer to array of doers
+    doers: [],
     description: "",
     frequency: "daily",
+    priority: "yes",
     enableReminders: true,
     requireAttachment: false,
   });
@@ -268,6 +300,17 @@ export default function AssignTask() {
   const handleSwitchChange = (name, e) => {
     setFormData((prev) => ({ ...prev, [name]: e.target.checked }));
   };
+
+    // Auto-fill givenBy with logged-in username
+  useEffect(() => {
+    const loggedInUsername = sessionStorage.getItem('username');
+    if (loggedInUsername) {
+      setFormData(prev => ({
+        ...prev,
+        givenBy: loggedInUsername
+      }));
+    }
+  }, []);
 
   // Function to fetch options from master sheet
   const fetchMasterSheetOptions = async () => {
@@ -473,43 +516,54 @@ export default function AssignTask() {
 
   // Updated generateTasks function that creates tasks for each selected doer
   const generateTasks = async () => {
-    if (!date || formData.doers.length === 0 || !formData.description || !formData.frequency) {
+    if (
+      !date ||
+      formData.doers.length === 0 ||
+      !formData.description ||
+      !formData.frequency
+    ) {
       return [];
     }
 
     // Fetch working days from the sheet
     const workingDays = await fetchWorkingDays();
     if (workingDays.length === 0) {
-      throw new Error("Could not retrieve working days. Please make sure the Working Day Calendar sheet is properly set up.");
+      throw new Error(
+        "Could not retrieve working days. Please make sure the Working Day Calendar sheet is properly set up."
+      );
     }
 
     // Sort the working days chronologically
     const sortedWorkingDays = [...workingDays].sort((a, b) => {
       // FIXED: Updated parsing for DD/MM/YYYY format
-      const [dayA, monthA, yearA] = a.split('/').map(Number);
-      const [dayB, monthB, yearB] = b.split('/').map(Number);
-      return new Date(yearA, monthA - 1, dayA) - new Date(yearB, monthB - 1, dayB);
+      const [dayA, monthA, yearA] = a.split("/").map(Number);
+      const [dayB, monthB, yearB] = b.split("/").map(Number);
+      return (
+        new Date(yearA, monthA - 1, dayA) - new Date(yearB, monthB - 1, dayB)
+      );
     });
 
     // Convert selected date to same format
     const selectedDate = new Date(date);
 
     // Filter out dates before the selected date (no back dates)
-    const futureDates = sortedWorkingDays.filter(dateStr => {
+    const futureDates = sortedWorkingDays.filter((dateStr) => {
       // FIXED: Updated parsing for DD/MM/YYYY format
-      const [dateDay, month, year] = dateStr.split('/').map(Number);
+      const [dateDay, month, year] = dateStr.split("/").map(Number);
       const dateObj = new Date(year, month - 1, dateDay);
       return dateObj >= selectedDate;
     });
 
     // If no future working days are available from the selected date
     if (futureDates.length === 0) {
-      throw new Error("No working days found on or after your selected date. Please choose a different start date or update the Working Day Calendar.");
+      throw new Error(
+        "No working days found on or after your selected date. Please choose a different start date or update the Working Day Calendar."
+      );
     }
 
     // Find the start date in working days
     const startDateStr = formatDateToDDMMYYYY(selectedDate);
-    let startIndex = futureDates.findIndex(d => d === startDateStr);
+    let startIndex = futureDates.findIndex((d) => d === startDateStr);
 
     // If the exact start date isn't found, use the next available working day
     if (startIndex === -1) {
@@ -519,7 +573,7 @@ export default function AssignTask() {
     const allTasks = [];
 
     // Generate tasks for each selected doer
-    formData.doers.forEach(doer => {
+    formData.doers.forEach((doer) => {
       const tasksForDoer = [];
 
       // For one-time tasks, just use the first available date
@@ -566,58 +620,104 @@ export default function AssignTask() {
             case "weekly": {
               // Find a working day approximately 7 calendar days later
               // FIXED: Updated parsing for DD/MM/YYYY format
-              const [taskDay, taskMonth, taskYear] = taskDateStr.split('/').map(Number);
+              const [taskDay, taskMonth, taskYear] = taskDateStr
+                .split("/")
+                .map(Number);
               const currentDate = new Date(taskYear, taskMonth - 1, taskDay);
               const targetDate = addDays(currentDate, 7);
               const targetDateStr = formatDateToDDMMYYYY(targetDate);
 
               // Find the next working day closest to the target date
-              const nextIndex = findClosestWorkingDayIndex(futureDates, targetDateStr);
-              currentIndex = nextIndex > currentIndex ? nextIndex : futureDates.length;
+              const nextIndex = findClosestWorkingDayIndex(
+                futureDates,
+                targetDateStr
+              );
+              currentIndex =
+                nextIndex > currentIndex ? nextIndex : futureDates.length;
               break;
             }
             case "fortnightly": {
               // Find a working day approximately 14 calendar days later
-              const [taskDay2, taskMonth2, taskYear2] = taskDateStr.split('/').map(Number);
-              const currentDate2 = new Date(taskYear2, taskMonth2 - 1, taskDay2);
+              const [taskDay2, taskMonth2, taskYear2] = taskDateStr
+                .split("/")
+                .map(Number);
+              const currentDate2 = new Date(
+                taskYear2,
+                taskMonth2 - 1,
+                taskDay2
+              );
               const targetDate2 = addDays(currentDate2, 14);
               const targetDateStr2 = formatDateToDDMMYYYY(targetDate2);
 
-              const nextIndex2 = findClosestWorkingDayIndex(futureDates, targetDateStr2);
-              currentIndex = nextIndex2 > currentIndex ? nextIndex2 : futureDates.length;
+              const nextIndex2 = findClosestWorkingDayIndex(
+                futureDates,
+                targetDateStr2
+              );
+              currentIndex =
+                nextIndex2 > currentIndex ? nextIndex2 : futureDates.length;
               break;
             }
             case "monthly": {
               // Find a working day approximately 1 month later
-              const [taskDay3, taskMonth3, taskYear3] = taskDateStr.split('/').map(Number);
-              const currentDate3 = new Date(taskYear3, taskMonth3 - 1, taskDay3);
+              const [taskDay3, taskMonth3, taskYear3] = taskDateStr
+                .split("/")
+                .map(Number);
+              const currentDate3 = new Date(
+                taskYear3,
+                taskMonth3 - 1,
+                taskDay3
+              );
               const targetDate3 = addMonths(currentDate3, 1);
               const targetDateStr3 = formatDateToDDMMYYYY(targetDate3);
 
-              const nextIndex3 = findClosestWorkingDayIndex(futureDates, targetDateStr3);
-              currentIndex = nextIndex3 > currentIndex ? nextIndex3 : futureDates.length;
+              const nextIndex3 = findClosestWorkingDayIndex(
+                futureDates,
+                targetDateStr3
+              );
+              currentIndex =
+                nextIndex3 > currentIndex ? nextIndex3 : futureDates.length;
               break;
             }
             case "quarterly": {
               // Find a working day approximately 3 months later
-              const [taskDay4, taskMonth4, taskYear4] = taskDateStr.split('/').map(Number);
-              const currentDate4 = new Date(taskYear4, taskMonth4 - 1, taskDay4);
+              const [taskDay4, taskMonth4, taskYear4] = taskDateStr
+                .split("/")
+                .map(Number);
+              const currentDate4 = new Date(
+                taskYear4,
+                taskMonth4 - 1,
+                taskDay4
+              );
               const targetDate4 = addMonths(currentDate4, 3);
               const targetDateStr4 = formatDateToDDMMYYYY(targetDate4);
 
-              const nextIndex4 = findClosestWorkingDayIndex(futureDates, targetDateStr4);
-              currentIndex = nextIndex4 > currentIndex ? nextIndex4 : futureDates.length;
+              const nextIndex4 = findClosestWorkingDayIndex(
+                futureDates,
+                targetDateStr4
+              );
+              currentIndex =
+                nextIndex4 > currentIndex ? nextIndex4 : futureDates.length;
               break;
             }
             case "yearly": {
               // Find a working day approximately 1 year later
-              const [taskDay5, taskMonth5, taskYear5] = taskDateStr.split('/').map(Number);
-              const currentDate5 = new Date(taskYear5, taskMonth5 - 1, taskDay5);
+              const [taskDay5, taskMonth5, taskYear5] = taskDateStr
+                .split("/")
+                .map(Number);
+              const currentDate5 = new Date(
+                taskYear5,
+                taskMonth5 - 1,
+                taskDay5
+              );
               const targetDate5 = addYears(currentDate5, 1);
               const targetDateStr5 = formatDateToDDMMYYYY(targetDate5);
 
-              const nextIndex5 = findClosestWorkingDayIndex(futureDates, targetDateStr5);
-              currentIndex = nextIndex5 > currentIndex ? nextIndex5 : futureDates.length;
+              const nextIndex5 = findClosestWorkingDayIndex(
+                futureDates,
+                targetDateStr5
+              );
+              currentIndex =
+                nextIndex5 > currentIndex ? nextIndex5 : futureDates.length;
               break;
             }
             case "end-of-1st-week":
@@ -627,23 +727,44 @@ export default function AssignTask() {
             case "end-of-last-week": {
               // These would need special handling based on your calendar's definition of weeks
               // For now, we'll just move to the next month and find the appropriate week
-              const [taskDay6, taskMonth6, taskYear6] = taskDateStr.split('/').map(Number);
-              const currentDate6 = new Date(taskYear6, taskMonth6 - 1, taskDay6);
+              const [taskDay6, taskMonth6, taskYear6] = taskDateStr
+                .split("/")
+                .map(Number);
+              const currentDate6 = new Date(
+                taskYear6,
+                taskMonth6 - 1,
+                taskDay6
+              );
               const targetDate6 = addMonths(currentDate6, 1);
 
               // Find the appropriate week in the next month
               let weekNumber;
               switch (formData.frequency) {
-                case "end-of-1st-week": weekNumber = 1; break;
-                case "end-of-2nd-week": weekNumber = 2; break;
-                case "end-of-3rd-week": weekNumber = 3; break;
-                case "end-of-4th-week": weekNumber = 4; break;
-                case "end-of-last-week": weekNumber = -1; break; // Special case for last week
+                case "end-of-1st-week":
+                  weekNumber = 1;
+                  break;
+                case "end-of-2nd-week":
+                  weekNumber = 2;
+                  break;
+                case "end-of-3rd-week":
+                  weekNumber = 3;
+                  break;
+                case "end-of-4th-week":
+                  weekNumber = 4;
+                  break;
+                case "end-of-last-week":
+                  weekNumber = -1;
+                  break; // Special case for last week
               }
 
-              const targetDateStr6 = findEndOfWeekDate(targetDate6, weekNumber, futureDates);
+              const targetDateStr6 = findEndOfWeekDate(
+                targetDate6,
+                weekNumber,
+                futureDates
+              );
               const nextIndex6 = futureDates.indexOf(targetDateStr6);
-              currentIndex = nextIndex6 > currentIndex ? nextIndex6 : futureDates.length;
+              currentIndex =
+                nextIndex6 > currentIndex ? nextIndex6 : futureDates.length;
               break;
             }
             default: {
@@ -663,7 +784,9 @@ export default function AssignTask() {
   // Helper function to find the closest working day to a target date
   const findClosestWorkingDayIndex = (workingDays, targetDateStr) => {
     // Parse the target date (DD/MM/YYYY format)
-    const [targetDay, targetMonth, targetYear] = targetDateStr.split('/').map(Number);
+    const [targetDay, targetMonth, targetYear] = targetDateStr
+      .split("/")
+      .map(Number);
     const targetDate = new Date(targetYear, targetMonth - 1, targetDay);
 
     // Find the closest working day (preferably after the target date)
@@ -671,11 +794,15 @@ export default function AssignTask() {
     let minDifference = Infinity;
 
     for (let i = 0; i < workingDays.length; i++) {
-      const [workingDay, workingMonth, workingYear] = workingDays[i].split('/').map(Number);
+      const [workingDay, workingMonth, workingYear] = workingDays[i]
+        .split("/")
+        .map(Number);
       const currentDate = new Date(workingYear, workingMonth - 1, workingDay);
 
       // Calculate difference in days
-      const difference = Math.abs((currentDate - targetDate) / (1000 * 60 * 60 * 24));
+      const difference = Math.abs(
+        (currentDate - targetDate) / (1000 * 60 * 60 * 24)
+      );
 
       if (currentDate >= targetDate && difference < minDifference) {
         minDifference = difference;
@@ -686,8 +813,14 @@ export default function AssignTask() {
     // If no working day found after the target date, find the closest one before
     if (closestIndex === -1) {
       for (let i = workingDays.length - 1; i >= 0; i--) {
-        const [workingDay2, workingMonth2, workingYear2] = workingDays[i].split('/').map(Number);
-        const currentDate2 = new Date(workingYear2, workingMonth2 - 1, workingDay2);
+        const [workingDay2, workingMonth2, workingYear2] = workingDays[i]
+          .split("/")
+          .map(Number);
+        const currentDate2 = new Date(
+          workingYear2,
+          workingMonth2 - 1,
+          workingDay2
+        );
 
         if (currentDate2 < targetDate) {
           closestIndex = i;
@@ -705,15 +838,15 @@ export default function AssignTask() {
     const month = date.getMonth();
 
     // Get all working days in the target month (DD/MM/YYYY format)
-    const daysInMonth = workingDays.filter(dateStr => {
-      const [, m, y] = dateStr.split('/').map(Number);
+    const daysInMonth = workingDays.filter((dateStr) => {
+      const [, m, y] = dateStr.split("/").map(Number);
       return y === year && m === month + 1;
     });
 
     // Sort them chronologically
     daysInMonth.sort((a, b) => {
-      const [dayA] = a.split('/').map(Number);
-      const [dayB] = b.split('/').map(Number);
+      const [dayA] = a.split("/").map(Number);
+      const [dayB] = b.split("/").map(Number);
       return dayA - dayB;
     });
 
@@ -723,7 +856,7 @@ export default function AssignTask() {
     let lastWeekDay = -1;
 
     for (const dateStr of daysInMonth) {
-      const [workingDay2, m, y] = dateStr.split('/').map(Number);
+      const [workingDay2, m, y] = dateStr.split("/").map(Number);
       const dateObj = new Date(y, m - 1, workingDay2);
       const weekDay = dateObj.getDay(); // 0 for Sunday, 1 for Monday, etc.
 
@@ -746,10 +879,17 @@ export default function AssignTask() {
     // Return the last day of the requested week
     if (weekNumber === -1) {
       // Last week of the month
-      return weekGroups[weekGroups.length - 1]?.[weekGroups[weekGroups.length - 1].length - 1] || daysInMonth[daysInMonth.length - 1];
+      return (
+        weekGroups[weekGroups.length - 1]?.[
+          weekGroups[weekGroups.length - 1].length - 1
+        ] || daysInMonth[daysInMonth.length - 1]
+      );
     } else if (weekNumber > 0 && weekNumber <= weekGroups.length) {
       // Specific week
-      return weekGroups[weekNumber - 1]?.[weekGroups[weekNumber - 1].length - 1] || daysInMonth[daysInMonth.length - 1];
+      return (
+        weekGroups[weekNumber - 1]?.[weekGroups[weekNumber - 1].length - 1] ||
+        daysInMonth[daysInMonth.length - 1]
+      );
     } else {
       // Default to the last day of the month if the requested week doesn't exist
       return daysInMonth[daysInMonth.length - 1];
@@ -762,8 +902,15 @@ export default function AssignTask() {
     setIsSubmitting(true);
 
     try {
-      if (!date || formData.doers.length === 0 || !formData.description || !formData.frequency) {
-        alert("Please fill in all required fields and select at least one doer.");
+      if (
+        !date ||
+        formData.doers.length === 0 ||
+        !formData.description ||
+        !formData.frequency
+      ) {
+        alert(
+          "Please fill in all required fields and select at least one doer."
+        );
         setIsSubmitting(false);
         return;
       }
@@ -780,27 +927,47 @@ export default function AssignTask() {
       // Determine the sheet based on frequency:
       // - "one-time" frequency → DELEGATION sheet (department doesn't matter)
       // - All other frequencies → Checklist sheet
-      const submitSheetName = formData.frequency === "one-time" ? "DELEGATION" : "Checklist";
+      const submitSheetName =
+        formData.frequency === "one-time" ? "DELEGATION" : "Checklist";
 
       // Get the last task ID from the appropriate sheet
       const lastTaskId = await getLastTaskId(submitSheetName);
       let nextTaskId = lastTaskId + 1;
 
       // Prepare all tasks data for batch insertion
+      // const tasksData = generatedTasks.map((task, index) => ({
+      //   timestamp: formatDateToDDMMYYYY(new Date()),
+      //   taskId: (nextTaskId + index).toString(),
+      //   firm: task.department, // Maps to Column C
+      //   givenBy: task.givenBy, // Maps to Column D
+      //   name: task.doer, // Maps to Column E
+      //   description: task.description, // Maps to Column F
+      //   startDate: task.dueDate, // Maps to Column G - now in DD/MM/YYYY format
+      //   freq: task.frequency, // Maps to Column H
+      //   enableReminders: task.enableReminders ? "Yes" : "No", // Maps to Column I
+      //   requireAttachment: task.requireAttachment ? "Yes" : "No", // Maps to Column J
+      // }));
+
+      // Prepare all tasks data for batch insertion
       const tasksData = generatedTasks.map((task, index) => ({
         timestamp: formatDateToDDMMYYYY(new Date()),
         taskId: (nextTaskId + index).toString(),
-        firm: task.department,                    // Maps to Column C
-        givenBy: task.givenBy,                    // Maps to Column D
-        name: task.doer,                          // Maps to Column E
-        description: task.description,            // Maps to Column F
-        startDate: task.dueDate,                  // Maps to Column G - now in DD/MM/YYYY format
-        freq: task.frequency,                     // Maps to Column H
-        enableReminders: task.enableReminders ? "Yes" : "No",    // Maps to Column I
-        requireAttachment: task.requireAttachment ? "Yes" : "No"  // Maps to Column J
+        firm: task.department, // Maps to Column C
+        givenBy: task.givenBy, // Maps to Column D
+        name: task.doer, // Maps to Column E
+        description: task.description, // Maps to Column F
+        startDate: task.dueDate, // Maps to Column G - now in DD/MM/YYYY format
+        freq: task.frequency, // Maps to Column H
+        enableReminders: task.enableReminders ? "Yes" : "No", // Maps to Column I
+        requireAttachment: task.requireAttachment ? "Yes" : "No", // Maps to Column J
+        
+        priority: formData.priority || "yes", // ADD THIS LINE - Maps to Column P
       }));
 
-      console.log(`Submitting ${tasksData.length} tasks in batch to ${submitSheetName} sheet:`, tasksData);
+      // console.log(
+      //   `Submitting ${tasksData.length} tasks in batch to ${submitSheetName} sheet:`,
+      //   tasksData
+      // );
 
       // Submit all tasks in one batch to Google Sheets
       const formPayload = new FormData();
@@ -819,7 +986,9 @@ export default function AssignTask() {
       );
 
       // Show a success message with the appropriate sheet name
-      alert(`Successfully submitted ${generatedTasks.length} tasks to ${submitSheetName} sheet!`);
+      alert(
+        `Successfully submitted ${generatedTasks.length} tasks to ${submitSheetName} sheet!`
+      );
 
       // Reset form
       setFormData({
@@ -828,8 +997,9 @@ export default function AssignTask() {
         doers: [], // Reset to empty array
         description: "",
         frequency: "daily",
+        priority: "yes",
         enableReminders: true,
-        requireAttachment: false
+        requireAttachment: false,
       });
       setSelectedDate(null);
     } catch (error) {
@@ -883,7 +1053,7 @@ export default function AssignTask() {
               </div>
 
               {/* Given By Dropdown */}
-              <div className="space-y-2">
+              {/* <div className="space-y-2">
                 <label
                   htmlFor="givenBy"
                   className="block text-sm font-medium text-purple-700"
@@ -905,6 +1075,24 @@ export default function AssignTask() {
                     </option>
                   ))}
                 </select>
+              </div> */}
+
+
+              <div className="space-y-2">
+                <label
+                  htmlFor="givenBy"
+                  className="block text-sm font-medium text-purple-700"
+                >
+                  Given By
+                </label>
+                <input
+                  type="text"
+                  id="givenBy"
+                  name="givenBy"
+                  value={formData.givenBy}
+                  readOnly
+                  className="w-full rounded-md border border-purple-200 p-2 bg-gray-50 text-gray-700 cursor-not-allowed"
+                />
               </div>
 
               {/* Multi-Select Doers Dropdown */}
@@ -913,7 +1101,10 @@ export default function AssignTask() {
                   htmlFor="doers"
                   className="block text-sm font-medium text-purple-700"
                 >
-                  Doer's Names <span className="text-sm text-purple-500">(Select multiple doers)</span>
+                  Doer's Names{" "}
+                  <span className="text-sm text-purple-500">
+                    (Select multiple doers)
+                  </span>
                 </label>
                 <MultiSelectDropdown
                   options={doerOptions}
@@ -931,7 +1122,11 @@ export default function AssignTask() {
                         {doer}
                         <button
                           type="button"
-                          onClick={() => handleDoersChange(formData.doers.filter(d => d !== doer))}
+                          onClick={() =>
+                            handleDoersChange(
+                              formData.doers.filter((d) => d !== doer)
+                            )
+                          }
                           className="ml-1 text-purple-500 hover:text-purple-700"
                         >
                           ×
@@ -1010,6 +1205,25 @@ export default function AssignTask() {
                     ))}
                   </select>
                 </div>
+              </div>
+
+              <div className="space-y-2">
+                <label
+                  htmlFor="priority"
+                  className="block text-sm font-medium text-purple-700"
+                >
+                  Priority
+                </label>
+                <select
+                  id="priority"
+                  name="priority"
+                  value={formData.priority || "yes"} // default "yes"
+                  onChange={handleChange}
+                  className="w-full rounded-md border border-purple-200 p-2 focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
+                >
+                  <option value="yes">Yes</option>
+                  <option value="no">No</option>
+                </select>
               </div>
 
               {/* Additional Options */}

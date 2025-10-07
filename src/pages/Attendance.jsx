@@ -360,8 +360,10 @@ function Attendance() {
               </button>
             </div>
           ) : (
-            /* Attendance Table */
-            <div className="overflow-x-auto">
+            <>
+            
+            {/* Attendance Table */}
+            <div className="hidden sm:flex overflow-x-auto">
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50">
                   <tr>
@@ -467,6 +469,142 @@ function Attendance() {
                 </tbody>
               </table>
             </div>
+
+
+
+                  <div className="sm:hidden overflow-x-auto">
+  {filteredAttendanceData.length > 0 ? (
+    filteredAttendanceData.map((record) => (
+      <div
+        key={record._id}
+        className="bg-white rounded-lg shadow-md border-2 mb-4 overflow-hidden"
+      >
+        {/* Header Section */}
+        <div className="bg-gradient-to-r from-purple-50 to-pink-50 p-3 border-b border-purple-200">
+          <div className="flex justify-between items-start mb-2">
+            <div>
+              <span className="text-xs font-medium text-purple-600">Employee Code:</span>
+              <p className="text-sm font-bold text-gray-900">
+                {record.employeeCode || "—"}
+              </p>
+            </div>
+            <div className="text-right">
+              <span className="text-xs font-medium text-purple-600">Month:</span>
+              <p className="text-sm font-semibold text-gray-900">
+                {record.monthName || "—"}
+              </p>
+            </div>
+          </div>
+          <div>
+            <span className="text-xs font-medium text-purple-600">Name:</span>
+            <p className="text-sm font-semibold text-gray-900">{record.name || "—"}</p>
+          </div>
+        </div>
+
+        {/* Punch Details Section */}
+        <div className="p-3 bg-blue-50 border-b border-blue-100">
+          <span className="text-xs font-semibold text-blue-700 uppercase mb-2 block">
+            Punch Details
+          </span>
+          <div className="grid grid-cols-3 gap-3 text-xs">
+            <div>
+              <span className="text-gray-600 font-medium">Total Punch:</span>
+              <p className="text-sm font-semibold text-gray-900 mt-1">
+                {record.totalPunch || "—"}
+              </p>
+            </div>
+            <div>
+              <span className="text-gray-600 font-medium">In Time:</span>
+              <p className="text-sm font-semibold text-gray-900 mt-1">
+                {record.inTime || "—"}
+              </p>
+            </div>
+            <div>
+              <span className="text-gray-600 font-medium">Out Time:</span>
+              <p className="text-sm font-semibold text-gray-900 mt-1">
+                {record.outTime || "—"}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Late & Miss Section */}
+        <div className="p-3 bg-yellow-50 border-b border-yellow-100">
+          <span className="text-xs font-semibold text-yellow-700 uppercase mb-2 block">
+            Late & Miss Details
+          </span>
+          <div className="grid grid-cols-3 gap-3 text-xs">
+            <div>
+              <span className="text-gray-600 font-medium">Punch Miss:</span>
+              <p className="text-sm font-semibold text-gray-900 mt-1">
+                {record.punchMiss || "—"}
+              </p>
+            </div>
+            <div>
+              <span className="text-gray-600 font-medium">In Late:</span>
+              <p className="text-sm font-semibold text-gray-900 mt-1">
+                {record.inLate || "—"}
+              </p>
+            </div>
+            <div>
+              <span className="text-gray-600 font-medium">Out Late:</span>
+              <p className="text-sm font-semibold text-gray-900 mt-1">
+                {record.outLate || "—"}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Days & Late Count */}
+        <div className="p-3 bg-green-50 border-b border-green-100">
+          <div className="grid grid-cols-2 gap-3 text-xs">
+            <div>
+              <span className="text-gray-600 font-medium">Total Days:</span>
+              <p className="text-sm font-semibold text-gray-900 mt-1">
+                {record.totalDays || "—"}
+              </p>
+            </div>
+            <div>
+              <span className="text-gray-600 font-medium">Late:</span>
+              <p className="text-sm font-semibold text-gray-900 mt-1">
+                {record.late || "—"}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Late Percentage Section */}
+        <div className="p-3 bg-red-50">
+          <span className="text-xs font-semibold text-red-700 uppercase mb-2 block">
+            Late Percentage
+          </span>
+          <div className="grid grid-cols-2 gap-3 text-xs">
+            <div>
+              <span className="text-gray-600 font-medium">Weekly Late %:</span>
+              <p className={`text-sm font-semibold mt-1 ${getLatePecentageColor(record.weeklyLatePercent)}`}>
+                {record.weeklyLatePercent ? `${record.weeklyLatePercent}%` : "—"}
+              </p>
+            </div>
+            <div>
+              <span className="text-gray-600 font-medium">Monthly Late %:</span>
+              <p className={`text-sm font-semibold mt-1 ${getLatePecentageColor(record.monthlyLatePercent)}`}>
+                {record.monthlyLatePercent ? `${record.monthlyLatePercent}%` : "—"}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    ))
+  ) : (
+    <div className="px-6 py-4 text-center text-gray-500">
+      {searchTerm || selectedMonth !== "All"
+        ? "No attendance records matching your filters"
+        : `No ${activeTab} attendance records found`}
+    </div>
+  )}
+</div>
+
+            </>
           )}
         </div>
 

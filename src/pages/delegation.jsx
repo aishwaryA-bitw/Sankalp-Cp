@@ -1,7 +1,15 @@
-"use client"
-import { useState, useEffect, useCallback, useMemo } from "react"
-import { CheckCircle2, Upload, X, Search, History, ArrowLeft, Download } from "lucide-react"
-import AdminLayout from "../components/layout/AdminLayout"
+"use client";
+import { useState, useEffect, useCallback, useMemo } from "react";
+import {
+  CheckCircle2,
+  Upload,
+  X,
+  Search,
+  History,
+  ArrowLeft,
+  Download,
+} from "lucide-react";
+import AdminLayout from "../components/layout/AdminLayout";
 
 // Configuration object - Move all configurations here
 const CONFIG = {
@@ -21,57 +29,83 @@ const CONFIG = {
     title: "DELEGATION Tasks",
     historyTitle: "DELEGATION Task History",
     description: "Showing all pending tasks",
-    historyDescription: "Read-only view of completed tasks with submission history",
+    historyDescription:
+      "Read-only view of completed tasks with submission history",
   },
-}
+};
 
 // Debounce hook for search optimization
 function useDebounce(value, delay) {
-  const [debouncedValue, setDebouncedValue] = useState(value)
+  const [debouncedValue, setDebouncedValue] = useState(value);
 
   useEffect(() => {
     const handler = setTimeout(() => {
-      setDebouncedValue(value)
-    }, delay)
+      setDebouncedValue(value);
+    }, delay);
 
     return () => {
-      clearTimeout(handler)
-    }
-  }, [value, delay])
+      clearTimeout(handler);
+    };
+  }, [value, delay]);
 
-  return debouncedValue
+  return debouncedValue;
 }
 
 function DelegationDataPage() {
-  const [accountData, setAccountData] = useState([])
-  const [selectedItems, setSelectedItems] = useState(new Set())
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [successMessage, setSuccessMessage] = useState("")
-  const [additionalData, setAdditionalData] = useState({})
-  const [searchTerm, setSearchTerm] = useState("")
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(null)
-  const [remarksData, setRemarksData] = useState({})
-  const [historyData, setHistoryData] = useState([])
-  const [showHistory, setShowHistory] = useState(false)
-  const [statusData, setStatusData] = useState({})
-  const [nextTargetDate, setNextTargetDate] = useState({})
-  const [startDate, setStartDate] = useState("")
-  const [endDate, setEndDate] = useState("")
-  const [userRole, setUserRole] = useState("")
-  const [username, setUsername] = useState("")
+  const [accountData, setAccountData] = useState([]);
+  const [selectedItems, setSelectedItems] = useState(new Set());
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
+  const [additionalData, setAdditionalData] = useState({});
+  const [searchTerm, setSearchTerm] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [remarksData, setRemarksData] = useState({});
+  const [historyData, setHistoryData] = useState([]);
+  const [showHistory, setShowHistory] = useState(false);
+  const [statusData, setStatusData] = useState({});
+  const [nextTargetDate, setNextTargetDate] = useState({});
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  const [userRole, setUserRole] = useState("");
+  const [username, setUsername] = useState("");
+
+  const [givenByFilter, setGivenByFilter] = useState("");
+  const [nameFilter, setNameFilter] = useState("");
+
+  const uniqueGivenByValues = useMemo(() => {
+    if (showHistory) {
+      // For history data, get unique values from col9 (Given By column in history)
+      const values = historyData.map((item) => item["col9"]).filter(Boolean);
+      return Array.from(new Set(values)).sort();
+    } else {
+      // For pending tasks, use col3 as before
+      const values = accountData.map((item) => item["col3"]).filter(Boolean);
+      return Array.from(new Set(values)).sort();
+    }
+  }, [accountData, historyData, showHistory]);
+
+  const uniqueNameValues = useMemo(() => {
+    if (showHistory) {
+      // For history data, get unique values from col7 (User column in history)
+      const values = historyData.map((item) => item["col7"]).filter(Boolean);
+      return Array.from(new Set(values)).sort();
+    } else {
+      // For pending tasks, use col4 as before
+      const values = accountData.map((item) => item["col4"]).filter(Boolean);
+      return Array.from(new Set(values)).sort();
+    }
+  }, [accountData, historyData, showHistory]);
 
   // Debounced search term for better performance
-  const debouncedSearchTerm = useDebounce(searchTerm, 300)
+  const debouncedSearchTerm = useDebounce(searchTerm, 300);
 
   const formatDateToDDMMYYYY = useCallback((date) => {
-    const day = date.getDate().toString().padStart(2, "0")
-    const month = (date.getMonth() + 1).toString().padStart(2, "0")
-    const year = date.getFullYear()
-    return `${day}/${month}/${year}`
-  }, [])
-
-
+    const day = date.getDate().toString().padStart(2, "0");
+    const month = (date.getMonth() + 1).toString().padStart(2, "0");
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
+  }, []);
 
   // Simplified export function
   const exportToCSV = () => {
@@ -82,10 +116,18 @@ function DelegationDataPage() {
       }
 
       // Simple CSV creation logic
-      const headers = "Task ID,Department,Given By,Name,Task Description,Task Start Date,Planned Date\n";
-      const rows = filteredAccountData.map(item =>
-        `"${item.col1 || ''}","${item.col2 || ''}","${item.col3 || ''}","${item.col4 || ''}","${item.col5 || ''}","${formatDateForDisplay(item.col6)}","${formatDateForDisplay(item.col10)}"`
-      ).join("\n");
+      const headers =
+        "Task ID,Department,Given By,Name,Task Description,Task Start Date,Planned Date\n";
+      const rows = filteredAccountData
+        .map(
+          (item) =>
+            `"${item.col1 || ""}","${item.col2 || ""}","${item.col3 || ""}","${
+              item.col4 || ""
+            }","${item.col5 || ""}","${formatDateForDisplay(
+              item.col6
+            )}","${formatDateForDisplay(item.col10)}"`
+        )
+        .join("\n");
 
       const csvContent = headers + rows;
       const encodedUri = encodeURI("data:text/csv;charset=utf-8," + csvContent);
@@ -103,15 +145,15 @@ function DelegationDataPage() {
   // NEW: Function to create a proper date object for Google Sheets
   const createGoogleSheetsDate = useCallback((date) => {
     // Return a Date object that Google Sheets can properly interpret
-    return new Date(date.getFullYear(), date.getMonth(), date.getDate())
-  }, [])
+    return new Date(date.getFullYear(), date.getMonth(), date.getDate());
+  }, []);
 
   // NEW: Function to format date for Google Sheets submission
   const formatDateForGoogleSheets = useCallback((date) => {
     // Create a properly formatted date string that Google Sheets will recognize as a date
-    const day = date.getDate().toString().padStart(2, "0")
-    const month = (date.getMonth() + 1).toString().padStart(2, "0")
-    const year = date.getFullYear()
+    const day = date.getDate().toString().padStart(2, "0");
+    const month = (date.getMonth() + 1).toString().padStart(2, "0");
+    const year = date.getFullYear();
 
     // Return in format that Google Sheets recognizes as date: DD/MM/YYYY
     // But we'll also include the raw date object for better compatibility
@@ -119,171 +161,217 @@ function DelegationDataPage() {
       formatted: `${day}/${month}/${year}`,
       dateObject: new Date(year, date.getMonth(), date.getDate()),
       // ISO format as fallback
-      iso: date.toISOString().split('T')[0],
+      iso: date.toISOString().split("T")[0],
       // Special format for Google Sheets API
-      googleSheetsValue: `=DATE(${year},${month},${day})`
-    }
-  }, [])
+      googleSheetsValue: `=DATE(${year},${month},${day})`,
+    };
+  }, []);
 
   // NEW: Function to convert DD/MM/YYYY string to Google Sheets date format
-  const convertToGoogleSheetsDate = useCallback((dateString) => {
-    if (!dateString || typeof dateString !== "string") return ""
+  const convertToGoogleSheetsDate = useCallback(
+    (dateString) => {
+      if (!dateString || typeof dateString !== "string") return "";
 
-    // If already in DD/MM/YYYY format
-    if (dateString.includes("/")) {
-      const [day, month, year] = dateString.split("/")
-      const date = new Date(year, month - 1, day)
-      if (!isNaN(date.getTime())) {
-        return formatDateForGoogleSheets(date)
+      // If already in DD/MM/YYYY format
+      if (dateString.includes("/")) {
+        const [day, month, year] = dateString.split("/");
+        const date = new Date(year, month - 1, day);
+        if (!isNaN(date.getTime())) {
+          return formatDateForGoogleSheets(date);
+        }
       }
-    }
 
-    // If in YYYY-MM-DD format (from HTML date input)
-    if (dateString.includes("-")) {
-      const [year, month, day] = dateString.split("-")
-      const date = new Date(year, month - 1, day)
-      if (!isNaN(date.getTime())) {
-        return formatDateForGoogleSheets(date)
+      // If in YYYY-MM-DD format (from HTML date input)
+      if (dateString.includes("-")) {
+        const [year, month, day] = dateString.split("-");
+        const date = new Date(year, month - 1, day);
+        if (!isNaN(date.getTime())) {
+          return formatDateForGoogleSheets(date);
+        }
       }
-    }
 
-    return { formatted: dateString, dateObject: null, iso: "", googleSheetsValue: dateString }
-  }, [formatDateForGoogleSheets])
+      return {
+        formatted: dateString,
+        dateObject: null,
+        iso: "",
+        googleSheetsValue: dateString,
+      };
+    },
+    [formatDateForGoogleSheets]
+  );
 
   const isEmpty = useCallback((value) => {
-    return value === null || value === undefined || (typeof value === "string" && value.trim() === "")
-  }, [])
+    return (
+      value === null ||
+      value === undefined ||
+      (typeof value === "string" && value.trim() === "")
+    );
+  }, []);
 
   useEffect(() => {
-    const role = sessionStorage.getItem("role")
-    const user = sessionStorage.getItem("username")
-    setUserRole(role || "")
-    setUsername(user || "")
-  }, [])
-
-
-
-
-
-
-
+    const role = sessionStorage.getItem("role");
+    const user = sessionStorage.getItem("username");
+    setUserRole(role || "");
+    setUsername(user || "");
+  }, []);
 
   const parseGoogleSheetsDate = useCallback(
     (dateStr) => {
-      if (!dateStr) return ""
+      if (!dateStr) return "";
 
       // If it's already in DD/MM/YYYY format, return as is
-      if (typeof dateStr === "string" && dateStr.match(/^\d{1,2}\/\d{1,2}\/\d{4}$/)) {
+      if (
+        typeof dateStr === "string" &&
+        dateStr.match(/^\d{1,2}\/\d{1,2}\/\d{4}$/)
+      ) {
         // Ensure proper padding for DD/MM/YYYY format
-        const parts = dateStr.split("/")
+        const parts = dateStr.split("/");
         if (parts.length === 3) {
-          const day = parts[0].padStart(2, "0")
-          const month = parts[1].padStart(2, "0")
-          const year = parts[2]
-          return `${day}/${month}/${year}`
+          const day = parts[0].padStart(2, "0");
+          const month = parts[1].padStart(2, "0");
+          const year = parts[2];
+          return `${day}/${month}/${year}`;
         }
-        return dateStr
+        return dateStr;
       }
 
       // Handle Google Sheets Date() format
       if (typeof dateStr === "string" && dateStr.startsWith("Date(")) {
-        const match = /Date\((\d+),(\d+),(\d+)\)/.exec(dateStr)
+        const match = /Date\((\d+),(\d+),(\d+)\)/.exec(dateStr);
         if (match) {
-          const year = Number.parseInt(match[1], 10)
-          const month = Number.parseInt(match[2], 10)
-          const day = Number.parseInt(match[3], 10)
-          return `${day.toString().padStart(2, "0")}/${(month + 1).toString().padStart(2, "0")}/${year}`
+          const year = Number.parseInt(match[1], 10);
+          const month = Number.parseInt(match[2], 10);
+          const day = Number.parseInt(match[3], 10);
+          return `${day.toString().padStart(2, "0")}/${(month + 1)
+            .toString()
+            .padStart(2, "0")}/${year}`;
         }
       }
 
       // Handle other date formats
       try {
-        const date = new Date(dateStr)
+        const date = new Date(dateStr);
         if (!isNaN(date.getTime())) {
-          return formatDateToDDMMYYYY(date)
+          return formatDateToDDMMYYYY(date);
         }
       } catch (error) {
-        console.error("Error parsing date:", error)
+        console.error("Error parsing date:", error);
       }
 
       // If all else fails, return the original string
-      return dateStr
+      return dateStr;
     },
-    [formatDateToDDMMYYYY],
-  )
+    [formatDateToDDMMYYYY]
+  );
 
   const formatDateForDisplay = useCallback(
     (dateStr) => {
-      if (!dateStr) return "—"
+      if (!dateStr) return "—";
 
       // If it's already in proper DD/MM/YYYY format, return as is
-      if (typeof dateStr === "string" && dateStr.match(/^\d{2}\/\d{2}\/\d{4}$/)) {
-        return dateStr
+      if (
+        typeof dateStr === "string" &&
+        dateStr.match(/^\d{2}\/\d{2}\/\d{4}$/)
+      ) {
+        return dateStr;
       }
 
       // Try to parse and reformat
-      return parseGoogleSheetsDate(dateStr) || "—"
+      return parseGoogleSheetsDate(dateStr) || "—";
     },
-    [parseGoogleSheetsDate],
-  )
+    [parseGoogleSheetsDate]
+  );
 
   const parseDateFromDDMMYYYY = useCallback((dateStr) => {
-    if (!dateStr || typeof dateStr !== "string") return null
-    const parts = dateStr.split("/")
-    if (parts.length !== 3) return null
-    return new Date(parts[2], parts[1] - 1, parts[0])
-  }, [])
+    if (!dateStr || typeof dateStr !== "string") return null;
+    const parts = dateStr.split("/");
+    if (parts.length !== 3) return null;
+    return new Date(parts[2], parts[1] - 1, parts[0]);
+  }, []);
 
   const sortDateWise = useCallback(
     (a, b) => {
-      const dateStrA = a["col6"] || ""
-      const dateStrB = b["col6"] || ""
-      const dateA = parseDateFromDDMMYYYY(dateStrA)
-      const dateB = parseDateFromDDMMYYYY(dateStrB)
-      if (!dateA) return 1
-      if (!dateB) return -1
-      return dateA.getTime() - dateB.getTime()
+      const dateStrA = a["col6"] || "";
+      const dateStrB = b["col6"] || "";
+      const dateA = parseDateFromDDMMYYYY(dateStrA);
+      const dateB = parseDateFromDDMMYYYY(dateStrB);
+      if (!dateA) return 1;
+      if (!dateB) return -1;
+      return dateA.getTime() - dateB.getTime();
     },
-    [parseDateFromDDMMYYYY],
-  )
+    [parseDateFromDDMMYYYY]
+  );
 
   const resetFilters = useCallback(() => {
-    setSearchTerm("")
-    setStartDate("")
-    setEndDate("")
-  }, [])
+    setSearchTerm("");
+    setStartDate("");
+    setEndDate("");
+    setGivenByFilter("");
+    setNameFilter("");
+  }, []);
 
   // Get color based on data from column R
   const getRowColor = useCallback((colorCode) => {
-    if (!colorCode) return "bg-white"
+    if (!colorCode) return "bg-white";
 
-    const code = colorCode.toString().toLowerCase()
+    const code = colorCode.toString().toLowerCase();
     switch (code) {
       case "red":
-        return "bg-red-50 border-l-4 border-red-400"
+        return "bg-red-50 border-l-4 border-red-400";
       case "yellow":
-        return "bg-yellow-50 border-l-4 border-yellow-400"
+        return "bg-yellow-50 border-l-4 border-yellow-400";
       case "green":
-        return "bg-green-50 border-l-4 border-green-400"
+        return "bg-green-50 border-l-4 border-green-400";
       case "blue":
-        return "bg-blue-50 border-l-4 border-blue-400"
+        return "bg-blue-50 border-l-4 border-blue-400";
       default:
-        return "bg-white"
+        return "bg-white";
     }
-  }, [])
+  }, []);
 
   // Optimized filtered data with debounced search
   const filteredAccountData = useMemo(() => {
-    const filtered = debouncedSearchTerm
-      ? accountData.filter((account) =>
-        Object.values(account).some(
-          (value) => value && value.toString().toLowerCase().includes(debouncedSearchTerm.toLowerCase()),
-        ),
-      )
-      : accountData
+    let filtered = accountData;
 
-    return filtered.sort(sortDateWise)
-  }, [accountData, debouncedSearchTerm, sortDateWise])
+    // Apply search filter
+    if (debouncedSearchTerm) {
+      filtered = filtered.filter((account) =>
+        Object.values(account).some(
+          (value) =>
+            value &&
+            value
+              .toString()
+              .toLowerCase()
+              .includes(debouncedSearchTerm.toLowerCase())
+        )
+      );
+    }
+
+    // Apply Given By filter
+    if (givenByFilter) {
+      filtered = filtered.filter(
+        (account) => account["col3"] === givenByFilter
+      );
+    }
+
+    // Apply Name filter
+    if (nameFilter) {
+      filtered = filtered.filter((account) => account["col4"] === nameFilter);
+    }
+
+    return filtered.sort(sortDateWise);
+  }, [
+    accountData,
+    debouncedSearchTerm,
+    givenByFilter,
+    nameFilter,
+    sortDateWise,
+  ]);
+
+  // console.log(
+  //   "History Given By values:",
+  //   historyData.map((item) => item["col9"])
+  // );
 
   // Updated history filtering with user filter based on column H
   const filteredHistoryData = useMemo(() => {
@@ -291,406 +379,477 @@ function DelegationDataPage() {
       .filter((item) => {
         // User filter: For non-admin users, check column H (col7) matches username
         const userMatch =
-          userRole === "admin" || (item["col7"] && item["col7"].toLowerCase() === username.toLowerCase())
+          userRole === "admin" ||
+          (item["col7"] &&
+            item["col7"].toLowerCase() === username.toLowerCase());
 
-        if (!userMatch) return false
+        if (!userMatch) return false;
 
         const matchesSearch = debouncedSearchTerm
           ? Object.values(item).some(
-            (value) => value && value.toString().toLowerCase().includes(debouncedSearchTerm.toLowerCase()),
-          )
-          : true
+              (value) =>
+                value &&
+                value
+                  .toString()
+                  .toLowerCase()
+                  .includes(debouncedSearchTerm.toLowerCase())
+            )
+          : true;
 
-        let matchesDateRange = true
+        // Given By filter - fix the condition
+        const matchesGivenBy = givenByFilter
+          ? item["col9"] &&
+            item["col9"].toString().trim().toLowerCase() ===
+              givenByFilter.trim().toLowerCase()
+          : true;
+
+        // Name filter (using col7 for history data)
+        const matchesName = nameFilter
+          ? item["col7"] &&
+            item["col7"].toString().trim().toLowerCase() ===
+              nameFilter.trim().toLowerCase()
+          : true;
+
+        let matchesDateRange = true;
         if (startDate || endDate) {
-          const itemDate = parseDateFromDDMMYYYY(item["col0"])
-          if (!itemDate) return false
+          const itemDate = parseDateFromDDMMYYYY(item["col0"]);
+          if (!itemDate) return false;
 
           if (startDate) {
-            const startDateObj = new Date(startDate)
-            startDateObj.setHours(0, 0, 0, 0)
-            if (itemDate < startDateObj) matchesDateRange = false
+            const startDateObj = new Date(startDate);
+            startDateObj.setHours(0, 0, 0, 0);
+            if (itemDate < startDateObj) matchesDateRange = false;
           }
 
           if (endDate) {
-            const endDateObj = new Date(endDate)
-            endDateObj.setHours(23, 59, 59, 999)
-            if (itemDate > endDateObj) matchesDateRange = false
+            const endDateObj = new Date(endDate);
+            endDateObj.setHours(23, 59, 59, 999);
+            if (itemDate > endDateObj) matchesDateRange = false;
           }
         }
 
-        return matchesSearch && matchesDateRange
+        return (
+          matchesSearch && matchesDateRange && matchesGivenBy && matchesName
+        );
+
+        // return matchesSearch && matchesDateRange;
       })
       .sort((a, b) => {
-        const dateStrA = a["col0"] || ""
-        const dateStrB = b["col0"] || ""
-        const dateA = parseDateFromDDMMYYYY(dateStrA)
-        const dateB = parseDateFromDDMMYYYY(dateStrB)
-        if (!dateA) return 1
-        if (!dateB) return -1
-        return dateB.getTime() - dateA.getTime()
-      })
-  }, [historyData, debouncedSearchTerm, startDate, endDate, parseDateFromDDMMYYYY, userRole, username])
+        const dateStrA = a["col0"] || "";
+        const dateStrB = b["col0"] || "";
+        const dateA = parseDateFromDDMMYYYY(dateStrA);
+        const dateB = parseDateFromDDMMYYYY(dateStrB);
+        if (!dateA) return 1;
+        if (!dateB) return -1;
+        return dateB.getTime() - dateA.getTime();
+      });
+  }, [
+    historyData,
+    debouncedSearchTerm,
+    startDate,
+    endDate,
+    parseDateFromDDMMYYYY,
+    userRole,
+    username,
+    givenByFilter, // Add this
+    nameFilter, // Add this
+  ]);
 
   // Optimized data fetching with parallel requests
   const fetchSheetData = useCallback(async () => {
     try {
-      setLoading(true)
-      setError(null)
+      setLoading(true);
+      setError(null);
 
       // Parallel fetch both sheets for better performance
       const [mainResponse, historyResponse] = await Promise.all([
-        fetch(`${CONFIG.APPS_SCRIPT_URL}?sheet=${CONFIG.SOURCE_SHEET_NAME}&action=fetch`),
-        fetch(`${CONFIG.APPS_SCRIPT_URL}?sheet=${CONFIG.TARGET_SHEET_NAME}&action=fetch`).catch(() => null),
-      ])
+        fetch(
+          `${CONFIG.APPS_SCRIPT_URL}?sheet=${CONFIG.SOURCE_SHEET_NAME}&action=fetch`
+        ),
+        fetch(
+          `${CONFIG.APPS_SCRIPT_URL}?sheet=${CONFIG.TARGET_SHEET_NAME}&action=fetch`
+        ).catch(() => null),
+      ]);
 
       if (!mainResponse.ok) {
-        throw new Error(`Failed to fetch data: ${mainResponse.status}`)
+        throw new Error(`Failed to fetch data: ${mainResponse.status}`);
       }
 
       // Process main data
-      const mainText = await mainResponse.text()
-      let data
+      const mainText = await mainResponse.text();
+      let data;
       try {
-        data = JSON.parse(mainText)
+        data = JSON.parse(mainText);
       } catch (parseError) {
-        const jsonStart = mainText.indexOf("{")
-        const jsonEnd = mainText.lastIndexOf("}")
+        const jsonStart = mainText.indexOf("{");
+        const jsonEnd = mainText.lastIndexOf("}");
         if (jsonStart !== -1 && jsonEnd !== -1) {
-          const jsonString = mainText.substring(jsonStart, jsonEnd + 1)
-          data = JSON.parse(jsonString)
+          const jsonString = mainText.substring(jsonStart, jsonEnd + 1);
+          data = JSON.parse(jsonString);
         } else {
-          throw new Error("Invalid JSON response from server")
+          throw new Error("Invalid JSON response from server");
         }
       }
 
       // Process history data if available
-      let processedHistoryData = []
+      let processedHistoryData = [];
       if (historyResponse && historyResponse.ok) {
         try {
-          const historyText = await historyResponse.text()
-          let historyData
+          const historyText = await historyResponse.text();
+          let historyData;
           try {
-            historyData = JSON.parse(historyText)
+            historyData = JSON.parse(historyText);
           } catch (parseError) {
-            const jsonStart = historyText.indexOf("{")
-            const jsonEnd = historyText.lastIndexOf("}")
+            const jsonStart = historyText.indexOf("{");
+            const jsonEnd = historyText.lastIndexOf("}");
             if (jsonStart !== -1 && jsonEnd !== -1) {
-              const jsonString = historyText.substring(jsonStart, jsonEnd + 1)
-              historyData = JSON.parse(jsonString)
+              const jsonString = historyText.substring(jsonStart, jsonEnd + 1);
+              historyData = JSON.parse(jsonString);
             }
           }
 
           if (historyData && historyData.table && historyData.table.rows) {
             processedHistoryData = historyData.table.rows
               .map((row, rowIndex) => {
-                if (rowIndex === 0) return null
+                if (rowIndex === 0) return null;
 
                 const rowData = {
                   _id: Math.random().toString(36).substring(2, 15),
                   _rowIndex: rowIndex + 2,
-                }
+                };
 
-                const rowValues = row.c ? row.c.map((cell) => (cell && cell.v !== undefined ? cell.v : "")) : []
+                const rowValues = row.c
+                  ? row.c.map((cell) =>
+                      cell && cell.v !== undefined ? cell.v : ""
+                    )
+                  : [];
 
                 // Map all columns including column H (col7) for user filtering and column I (col8) for Task
-                rowData["col0"] = rowValues[0] ? parseGoogleSheetsDate(String(rowValues[0])) : ""
-                rowData["col1"] = rowValues[1] || ""
-                rowData["col2"] = rowValues[2] || ""
-                rowData["col3"] = rowValues[3] || ""
-                rowData["col4"] = rowValues[4] || ""
-                rowData["col5"] = rowValues[5] || ""
-                rowData["col6"] = rowValues[6] || ""
-                rowData["col7"] = rowValues[7] || "" // Column H - User name
-                rowData["col8"] = rowValues[8] || "" // Column I - Task
-                rowData["col9"] = rowValues[9] || "" // Column J - Given By
+                rowData["col0"] = rowValues[0]
+                  ? parseGoogleSheetsDate(String(rowValues[0]))
+                  : "";
+                rowData["col1"] = rowValues[1] || "";
+                rowData["col2"] = rowValues[2] || "";
+                rowData["col3"] = rowValues[3] || "";
+                rowData["col4"] = rowValues[4] || "";
+                rowData["col5"] = rowValues[5] || "";
+                rowData["col6"] = rowValues[6] || "";
+                rowData["col7"] = rowValues[7] || ""; // Column H - User name
+                rowData["col8"] = rowValues[8] || ""; // Column I - Task
+                rowData["col9"] = rowValues[9] || ""; // Column J - Given By
 
-                return rowData
+                return rowData;
               })
-              .filter((row) => row !== null)
+              .filter((row) => row !== null);
           }
         } catch (historyError) {
-          console.error("Error processing history data:", historyError)
+          console.error("Error processing history data:", historyError);
         }
       }
 
-      setHistoryData(processedHistoryData)
+      setHistoryData(processedHistoryData);
 
       // Process main delegation data - REMOVED DATE FILTERING
-      const currentUsername = sessionStorage.getItem("username")
-      const currentUserRole = sessionStorage.getItem("role")
+      const currentUsername = sessionStorage.getItem("username");
+      const currentUserRole = sessionStorage.getItem("role");
 
-      const pendingAccounts = []
+      const pendingAccounts = [];
 
-      let rows = []
+      let rows = [];
       if (data.table && data.table.rows) {
-        rows = data.table.rows
+        rows = data.table.rows;
       } else if (Array.isArray(data)) {
-        rows = data
+        rows = data;
       } else if (data.values) {
-        rows = data.values.map((row) => ({ c: row.map((val) => ({ v: val })) }))
+        rows = data.values.map((row) => ({
+          c: row.map((val) => ({ v: val })),
+        }));
       }
 
       rows.forEach((row, rowIndex) => {
-        if (rowIndex === 0) return // Skip header row
+        if (rowIndex === 0) return; // Skip header row
 
-        let rowValues = []
+        let rowValues = [];
         if (row.c) {
-          rowValues = row.c.map((cell) => (cell && cell.v !== undefined ? cell.v : ""))
+          rowValues = row.c.map((cell) =>
+            cell && cell.v !== undefined ? cell.v : ""
+          );
         } else if (Array.isArray(row)) {
-          rowValues = row
+          rowValues = row;
         } else {
-          return
+          return;
         }
 
-        const assignedTo = rowValues[4] || "Unassigned"
-        const isUserMatch = currentUserRole === "admin" || assignedTo.toLowerCase() === currentUsername.toLowerCase()
-        if (!isUserMatch && currentUserRole !== "admin") return
+        const assignedTo = rowValues[4] || "Unassigned";
+        const isUserMatch =
+          currentUserRole === "admin" ||
+          assignedTo.toLowerCase() === currentUsername.toLowerCase();
+        if (!isUserMatch && currentUserRole !== "admin") return;
 
         // Check conditions: Column K not null and Column L null
-        const columnKValue = rowValues[10]
-        const columnLValue = rowValues[11]
+        const columnKValue = rowValues[10];
+        const columnLValue = rowValues[11];
 
-        const hasColumnK = !isEmpty(columnKValue)
-        const isColumnLEmpty = isEmpty(columnLValue)
+        const hasColumnK = !isEmpty(columnKValue);
+        const isColumnLEmpty = isEmpty(columnLValue);
 
         if (!hasColumnK || !isColumnLEmpty) {
-          return
+          return;
         }
 
         // REMOVED DATE FILTERING - Show all data regardless of date
 
-        const googleSheetsRowIndex = rowIndex + 1
-        const taskId = rowValues[1] || ""
+        const googleSheetsRowIndex = rowIndex + 1;
+        const taskId = rowValues[1] || "";
         const stableId = taskId
           ? `task_${taskId}_${googleSheetsRowIndex}`
-          : `row_${googleSheetsRowIndex}_${Math.random().toString(36).substring(2, 15)}`
+          : `row_${googleSheetsRowIndex}_${Math.random()
+              .toString(36)
+              .substring(2, 15)}`;
 
         const rowData = {
           _id: stableId,
           _rowIndex: googleSheetsRowIndex,
           _taskId: taskId,
-        }
+        };
 
         // Map all columns
         for (let i = 0; i < 18; i++) {
           if (i === 0 || i === 6 || i === 10) {
-            rowData[`col${i}`] = rowValues[i] ? parseGoogleSheetsDate(String(rowValues[i])) : ""
+            rowData[`col${i}`] = rowValues[i]
+              ? parseGoogleSheetsDate(String(rowValues[i]))
+              : "";
           } else {
-            rowData[`col${i}`] = rowValues[i] || ""
+            rowData[`col${i}`] = rowValues[i] || "";
           }
         }
 
-        pendingAccounts.push(rowData)
-      })
+        pendingAccounts.push(rowData);
+      });
 
-      setAccountData(pendingAccounts)
-      setLoading(false)
+      setAccountData(pendingAccounts);
+      setLoading(false);
     } catch (error) {
-      console.error("Error fetching sheet data:", error)
-      setError("Failed to load account data: " + error.message)
-      setLoading(false)
+      console.error("Error fetching sheet data:", error);
+      setError("Failed to load account data: " + error.message);
+      setLoading(false);
     }
-  }, [formatDateToDDMMYYYY, parseGoogleSheetsDate, parseDateFromDDMMYYYY, isEmpty])
+  }, [
+    formatDateToDDMMYYYY,
+    parseGoogleSheetsDate,
+    parseDateFromDDMMYYYY,
+    isEmpty,
+  ]);
 
   useEffect(() => {
-    fetchSheetData()
-  }, [fetchSheetData])
+    fetchSheetData();
+  }, [fetchSheetData]);
 
   const handleSelectItem = useCallback((id, isChecked) => {
     setSelectedItems((prev) => {
-      const newSelected = new Set(prev)
+      const newSelected = new Set(prev);
 
       if (isChecked) {
-        newSelected.add(id)
-        setStatusData((prevStatus) => ({ ...prevStatus, [id]: "Done" }))
+        newSelected.add(id);
+        setStatusData((prevStatus) => ({ ...prevStatus, [id]: "Done" }));
       } else {
-        newSelected.delete(id)
+        newSelected.delete(id);
         setAdditionalData((prevData) => {
-          const newAdditionalData = { ...prevData }
-          delete newAdditionalData[id]
-          return newAdditionalData
-        })
+          const newAdditionalData = { ...prevData };
+          delete newAdditionalData[id];
+          return newAdditionalData;
+        });
         setRemarksData((prevRemarks) => {
-          const newRemarksData = { ...prevRemarks }
-          delete newRemarksData[id]
-          return newRemarksData
-        })
+          const newRemarksData = { ...prevRemarks };
+          delete newRemarksData[id];
+          return newRemarksData;
+        });
         setStatusData((prevStatus) => {
-          const newStatusData = { ...prevStatus }
-          delete newStatusData[id]
-          return newStatusData
-        })
+          const newStatusData = { ...prevStatus };
+          delete newStatusData[id];
+          return newStatusData;
+        });
         setNextTargetDate((prevDate) => {
-          const newDateData = { ...prevDate }
-          delete newDateData[id]
-          return newDateData
-        })
+          const newDateData = { ...prevDate };
+          delete newDateData[id];
+          return newDateData;
+        });
       }
 
-      return newSelected
-    })
-  }, [])
+      return newSelected;
+    });
+  }, []);
 
   const handleCheckboxClick = useCallback(
     (e, id) => {
-      e.stopPropagation()
-      const isChecked = e.target.checked
-      handleSelectItem(id, isChecked)
+      e.stopPropagation();
+      const isChecked = e.target.checked;
+      handleSelectItem(id, isChecked);
     },
-    [handleSelectItem],
-  )
+    [handleSelectItem]
+  );
 
   const handleSelectAllItems = useCallback(
     (e) => {
-      e.stopPropagation()
-      const checked = e.target.checked
+      e.stopPropagation();
+      const checked = e.target.checked;
 
       if (checked) {
-        const allIds = filteredAccountData.map((item) => item._id)
-        setSelectedItems(new Set(allIds))
+        const allIds = filteredAccountData.map((item) => item._id);
+        setSelectedItems(new Set(allIds));
 
-        const newStatusData = {}
+        const newStatusData = {};
         allIds.forEach((id) => {
-          newStatusData[id] = "Done"
-        })
-        setStatusData((prev) => ({ ...prev, ...newStatusData }))
+          newStatusData[id] = "Done";
+        });
+        setStatusData((prev) => ({ ...prev, ...newStatusData }));
       } else {
-        setSelectedItems(new Set())
-        setAdditionalData({})
-        setRemarksData({})
-        setStatusData({})
-        setNextTargetDate({})
+        setSelectedItems(new Set());
+        setAdditionalData({});
+        setRemarksData({});
+        setStatusData({});
+        setNextTargetDate({});
       }
     },
-    [filteredAccountData],
-  )
+    [filteredAccountData]
+  );
 
   const handleImageUpload = useCallback(async (id, e) => {
-    const file = e.target.files[0]
-    if (!file) return
+    const file = e.target.files[0];
+    if (!file) return;
 
-    setAccountData((prev) => prev.map((item) => (item._id === id ? { ...item, image: file } : item)))
-  }, [])
+    setAccountData((prev) =>
+      prev.map((item) => (item._id === id ? { ...item, image: file } : item))
+    );
+  }, []);
 
   const handleStatusChange = useCallback((id, value) => {
-    setStatusData((prev) => ({ ...prev, [id]: value }))
+    setStatusData((prev) => ({ ...prev, [id]: value }));
     if (value === "Done") {
       setNextTargetDate((prev) => {
-        const newDates = { ...prev }
-        delete newDates[id]
-        return newDates
-      })
+        const newDates = { ...prev };
+        delete newDates[id];
+        return newDates;
+      });
     }
-  }, [])
+  }, []);
 
   const handleNextTargetDateChange = useCallback((id, value) => {
-    setNextTargetDate((prev) => ({ ...prev, [id]: value }))
-  }, [])
+    setNextTargetDate((prev) => ({ ...prev, [id]: value }));
+  }, []);
 
   const fileToBase64 = useCallback((file) => {
     return new Promise((resolve, reject) => {
-      const reader = new FileReader()
-      reader.readAsDataURL(file)
-      reader.onload = () => resolve(reader.result)
-      reader.onerror = (error) => reject(error)
-    })
-  }, [])
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = (error) => reject(error);
+    });
+  }, []);
 
   const toggleHistory = useCallback(() => {
-    setShowHistory((prev) => !prev)
-    resetFilters()
-  }, [resetFilters])
+    setShowHistory((prev) => !prev);
+    resetFilters();
+  }, [resetFilters]);
 
   const handleSubmit = async () => {
-    const selectedItemsArray = Array.from(selectedItems)
+    const selectedItemsArray = Array.from(selectedItems);
 
     if (selectedItemsArray.length === 0) {
-      alert("Please select at least one item to submit")
-      return
+      alert("Please select at least one item to submit");
+      return;
     }
 
-    const missingStatus = selectedItemsArray.filter((id) => !statusData[id])
+    const missingStatus = selectedItemsArray.filter((id) => !statusData[id]);
     if (missingStatus.length > 0) {
-      alert(`Please select a status for all selected items. ${missingStatus.length} item(s) are missing status.`)
-      return
+      alert(
+        `Please select a status for all selected items. ${missingStatus.length} item(s) are missing status.`
+      );
+      return;
     }
 
-    const missingNextDate = selectedItemsArray.filter((id) => statusData[id] === "Extend date" && !nextTargetDate[id])
+    const missingNextDate = selectedItemsArray.filter(
+      (id) => statusData[id] === "Extend date" && !nextTargetDate[id]
+    );
     if (missingNextDate.length > 0) {
       alert(
-        `Please select a next target date for all items with "Extend date" status. ${missingNextDate.length} item(s) are missing target date.`,
-      )
-      return
+        `Please select a next target date for all items with "Extend date" status. ${missingNextDate.length} item(s) are missing target date.`
+      );
+      return;
     }
 
     const missingRequiredImages = selectedItemsArray.filter((id) => {
-      const item = accountData.find((account) => account._id === id)
-      const requiresAttachment = item["col9"] && item["col9"].toUpperCase() === "YES"
-      return requiresAttachment && !item.image
-    })
+      const item = accountData.find((account) => account._id === id);
+      const requiresAttachment =
+        item["col9"] && item["col9"].toUpperCase() === "YES";
+      return requiresAttachment && !item.image;
+    });
 
     if (missingRequiredImages.length > 0) {
       alert(
-        `Please upload images for all required attachments. ${missingRequiredImages.length} item(s) are missing required images.`,
-      )
-      return
+        `Please upload images for all required attachments. ${missingRequiredImages.length} item(s) are missing required images.`
+      );
+      return;
     }
 
-    setIsSubmitting(true)
+    setIsSubmitting(true);
 
     try {
-      const today = new Date()
+      const today = new Date();
       // UPDATED: Use the new function to format date properly for Google Sheets
-      const dateForSubmission = formatDateForGoogleSheets(today)
+      const dateForSubmission = formatDateForGoogleSheets(today);
 
       // Process submissions in batches for better performance
-      const batchSize = 5
+      const batchSize = 5;
       for (let i = 0; i < selectedItemsArray.length; i += batchSize) {
-        const batch = selectedItemsArray.slice(i, i + batchSize)
+        const batch = selectedItemsArray.slice(i, i + batchSize);
 
         await Promise.all(
           batch.map(async (id) => {
-            const item = accountData.find((account) => account._id === id)
-            let imageUrl = ""
+            const item = accountData.find((account) => account._id === id);
+            let imageUrl = "";
 
             if (item.image instanceof File) {
               try {
-                const base64Data = await fileToBase64(item.image)
+                const base64Data = await fileToBase64(item.image);
 
-                const uploadFormData = new FormData()
-                uploadFormData.append("action", "uploadFile")
-                uploadFormData.append("base64Data", base64Data)
+                const uploadFormData = new FormData();
+                uploadFormData.append("action", "uploadFile");
+                uploadFormData.append("base64Data", base64Data);
                 uploadFormData.append(
                   "fileName",
-                  `task_${item["col1"]}_${Date.now()}.${item.image.name.split(".").pop()}`,
-                )
-                uploadFormData.append("mimeType", item.image.type)
-                uploadFormData.append("folderId", CONFIG.DRIVE_FOLDER_ID)
+                  `task_${item["col1"]}_${Date.now()}.${item.image.name
+                    .split(".")
+                    .pop()}`
+                );
+                uploadFormData.append("mimeType", item.image.type);
+                uploadFormData.append("folderId", CONFIG.DRIVE_FOLDER_ID);
 
                 const uploadResponse = await fetch(CONFIG.APPS_SCRIPT_URL, {
                   method: "POST",
                   body: uploadFormData,
-                })
+                });
 
-                const uploadResult = await uploadResponse.json()
+                const uploadResult = await uploadResponse.json();
                 if (uploadResult.success) {
-                  imageUrl = uploadResult.fileUrl
+                  imageUrl = uploadResult.fileUrl;
                 }
               } catch (uploadError) {
-                console.error("Error uploading image:", uploadError)
+                console.error("Error uploading image:", uploadError);
               }
             }
 
             // UPDATED: Use properly formatted date for submission
             // Format the next target date properly if it exists
-            let formattedNextTargetDate = ""
-            let nextTargetDateForGoogleSheets = null
+            let formattedNextTargetDate = "";
+            let nextTargetDateForGoogleSheets = null;
 
             if (nextTargetDate[id]) {
-              const convertedDate = convertToGoogleSheetsDate(nextTargetDate[id])
-              formattedNextTargetDate = convertedDate.formatted
-              nextTargetDateForGoogleSheets = convertedDate.dateObject
+              const convertedDate = convertToGoogleSheetsDate(
+                nextTargetDate[id]
+              );
+              formattedNextTargetDate = convertedDate.formatted;
+              nextTargetDateForGoogleSheets = convertedDate.dateObject;
             }
 
             // Updated to include username in column H and task description in column I when submitting to history
@@ -705,126 +864,217 @@ function DelegationDataPage() {
               username, // Column H - Store the logged-in username
               item["col5"] || "", // Column I - Task description from col5
               item["col3"] || "", // Column J - Given By from original task
-            ]
+            ];
 
-            const insertFormData = new FormData()
-            insertFormData.append("sheetName", CONFIG.TARGET_SHEET_NAME)
-            insertFormData.append("action", "insert")
-            insertFormData.append("rowData", JSON.stringify(newRowData))
+            const insertFormData = new FormData();
+            insertFormData.append("sheetName", CONFIG.TARGET_SHEET_NAME);
+            insertFormData.append("action", "insert");
+            insertFormData.append("rowData", JSON.stringify(newRowData));
 
             // UPDATED: Add comprehensive date format hints for Google Sheets
-            insertFormData.append("dateFormat", "DD/MM/YYYY")
-            insertFormData.append("timestampColumn", "0") // Column A - Timestamp
-            insertFormData.append("nextTargetDateColumn", "3") // Column D - Next Target Date
+            insertFormData.append("dateFormat", "DD/MM/YYYY");
+            insertFormData.append("timestampColumn", "0"); // Column A - Timestamp
+            insertFormData.append("nextTargetDateColumn", "3"); // Column D - Next Target Date
 
             // Add additional metadata for proper date handling
             const dateMetadata = {
               columns: {
                 0: { type: "date", format: "DD/MM/YYYY" }, // Timestamp
-                3: { type: "date", format: "DD/MM/YYYY" }  // Next Target Date
-              }
-            }
-            insertFormData.append("dateMetadata", JSON.stringify(dateMetadata))
+                3: { type: "date", format: "DD/MM/YYYY" }, // Next Target Date
+              },
+            };
+            insertFormData.append("dateMetadata", JSON.stringify(dateMetadata));
 
             // If we have a proper date object for next target date, send it separately
             if (nextTargetDateForGoogleSheets) {
-              insertFormData.append("nextTargetDateObject", nextTargetDateForGoogleSheets.toISOString())
+              insertFormData.append(
+                "nextTargetDateObject",
+                nextTargetDateForGoogleSheets.toISOString()
+              );
             }
 
             return fetch(CONFIG.APPS_SCRIPT_URL, {
               method: "POST",
               body: insertFormData,
-            })
-          }),
-        )
+            });
+          })
+        );
       }
 
-      setAccountData((prev) => prev.filter((item) => !selectedItems.has(item._id)))
+      setAccountData((prev) =>
+        prev.filter((item) => !selectedItems.has(item._id))
+      );
 
       setSuccessMessage(
-        `Successfully processed ${selectedItemsArray.length} task records! Data submitted to ${CONFIG.TARGET_SHEET_NAME} sheet.`,
-      )
-      setSelectedItems(new Set())
-      setAdditionalData({})
-      setRemarksData({})
-      setStatusData({})
-      setNextTargetDate({})
+        `Successfully processed ${selectedItemsArray.length} task records! Data submitted to ${CONFIG.TARGET_SHEET_NAME} sheet.`
+      );
+      setSelectedItems(new Set());
+      setAdditionalData({});
+      setRemarksData({});
+      setStatusData({});
+      setNextTargetDate({});
 
       setTimeout(() => {
-        fetchSheetData()
-      }, 2000)
+        fetchSheetData();
+      }, 2000);
     } catch (error) {
-      console.error("Submission error:", error)
-      alert("Failed to submit task records: " + error.message)
+      console.error("Submission error:", error);
+      alert("Failed to submit task records: " + error.message);
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-  }
+  };
 
-  const selectedItemsCount = selectedItems.size
+  const calculateDelayDays = (plannedDateStr) => {
+    if (!plannedDateStr) return 0;
+
+    const plannedDate = parseDateFromDDMMYYYY(plannedDateStr);
+    if (!plannedDate) return 0;
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Reset time to start of day
+    plannedDate.setHours(0, 0, 0, 0); // Reset time to start of day
+
+    const diffTime = today.getTime() - plannedDate.getTime();
+    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+
+    return diffDays > 0 ? diffDays : 0; // Only show positive delays
+  };
+
+  const selectedItemsCount = selectedItems.size;
+
+  // console.log("filteredAccountData", filteredAccountData);
 
   return (
     <AdminLayout>
       <div className="min-h-screen bg-gray-50">
         {/* STICKY HEADER SECTION */}
-  <div className="bg-white border-b border-gray-200 shadow-sm">
-  <div className="px-4 py-4 sm:px-6 lg:px-8">
-    <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-      
-      {/* Title */}
-      <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-purple-700 text-center sm:text-left">
-        {showHistory ? CONFIG.PAGE_CONFIG.historyTitle : CONFIG.PAGE_CONFIG.title}
-      </h1>
+        <div className="bg-white border-b border-gray-200 shadow-sm">
+          <div className="px-4 py-4 sm:px-6 lg:px-8">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+              {/* Title */}
+              <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-purple-700 text-center sm:text-left">
+                {showHistory
+                  ? CONFIG.PAGE_CONFIG.historyTitle
+                  : CONFIG.PAGE_CONFIG.title}
+              </h1>
 
-      {/* Actions */}
-      <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 w-full sm:w-auto">
-        
-        {/* Search input */}
-        <div className="relative w-full sm:w-64">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
-          <input
-            type="text"
-            placeholder={showHistory ? "Search by Task ID..." : "Search tasks..."}
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 border border-purple-200 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
-          />
+              <div className="p-4 border-b border-purple-100 bg-transparent">
+                <div className="flex flex-wrap items-center justify-between gap-4">
+                  {/* Filters Row */}
+                  <div className="flex flex-nowrap items-center gap-6">
+                    {/* Given By Filter */}
+                    <div className="flex flex-col sm:flex-row items-center gap-2">
+                      <label
+                        htmlFor="given-by-filter"
+                        className="text-sm font-medium text-purple-700"
+                      >
+                        Given By
+                      </label>
+                      <select
+                        id="given-by-filter"
+                        value={givenByFilter}
+                        onChange={(e) => setGivenByFilter(e.target.value)}
+                        className="border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
+                      >
+                        <option value="">All</option>
+                        {uniqueGivenByValues.map((value) => (
+                          <option key={value} value={value}>
+                            {value}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    {/* Name Filter */}
+                    <div className="flex flex-col sm:flex-row items-center gap-2">
+                      <label
+                        htmlFor="name-filter"
+                        className="text-sm font-medium text-purple-700"
+                      >
+                        {showHistory ? "User" : "Name"}
+                      </label>
+                      <select
+                        id="name-filter"
+                        value={nameFilter}
+                        onChange={(e) => setNameFilter(e.target.value)}
+                        className="border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
+                      >
+                        <option value="">All</option>
+                        {uniqueNameValues.map((value) => (
+                          <option key={value} value={value}>
+                            {value}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    {/* Clear All Filters Button */}
+                    {(searchTerm || givenByFilter || nameFilter) && (
+                      <button
+                        onClick={resetFilters}
+                        className="px-3 py-2 bg-red-100 text-red-700 rounded-md hover:bg-red-200 text-sm h-fit"
+                      >
+                        Clear
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* Actions */}
+              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 w-full sm:w-auto">
+                {/* Search input */}
+                <div className="relative w-full sm:w-64">
+                  <Search
+                    className="absolute left-3 top-[40%] transform -translate-y-1/2 text-gray-400"
+                    size={18}
+                  />
+                  <input
+                    type="text"
+                    placeholder={
+                      showHistory ? "Search by Task ID..." : "Search tasks..."
+                    }
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="w-full pl-10 pr-4 py-2 border border-purple-200 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                  />
+                </div>
+
+                {/* History toggle button */}
+                <button
+                  onClick={toggleHistory}
+                  className="rounded-md bg-gradient-to-r from-blue-500 to-indigo-600 py-2 px-4 text-white hover:from-blue-600 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 w-full sm:w-auto"
+                >
+                  {showHistory ? (
+                    <div className="flex items-center justify-center">
+                      <ArrowLeft className="h-4 w-4 mr-1" />
+                      <span>Back to Tasks</span>
+                    </div>
+                  ) : (
+                    <div className="flex items-center justify-center">
+                      <History className="h-4 w-4 mr-1" />
+                      <span>View History</span>
+                    </div>
+                  )}
+                </button>
+
+                {/* Submit button */}
+                {!showHistory && (
+                  <button
+                    onClick={handleSubmit}
+                    disabled={selectedItemsCount === 0 || isSubmitting}
+                    className="rounded-md bg-gradient-to-r from-purple-600 to-pink-600 py-2 px-4 text-white hover:from-purple-700 hover:to-pink-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed w-full sm:w-auto"
+                  >
+                    {isSubmitting
+                      ? "Processing..."
+                      : `Submit Selected (${selectedItemsCount})`}
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
         </div>
-
-        {/* History toggle button */}
-        <button
-          onClick={toggleHistory}
-          className="rounded-md bg-gradient-to-r from-blue-500 to-indigo-600 py-2 px-4 text-white hover:from-blue-600 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 w-full sm:w-auto"
-        >
-          {showHistory ? (
-            <div className="flex items-center justify-center">
-              <ArrowLeft className="h-4 w-4 mr-1" />
-              <span>Back to Tasks</span>
-            </div>
-          ) : (
-            <div className="flex items-center justify-center">
-              <History className="h-4 w-4 mr-1" />
-              <span>View History</span>
-            </div>
-          )}
-        </button>
-
-        {/* Submit button */}
-        {!showHistory && (
-          <button
-            onClick={handleSubmit}
-            disabled={selectedItemsCount === 0 || isSubmitting}
-            className="rounded-md bg-gradient-to-r from-purple-600 to-pink-600 py-2 px-4 text-white hover:from-purple-700 hover:to-pink-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed w-full sm:w-auto"
-          >
-            {isSubmitting ? "Processing..." : `Submit Selected (${selectedItemsCount})`}
-          </button>
-        )}
-      </div>
-    </div>
-  </div>
-</div>
-
-
 
         {/* MAIN CONTENT SECTION - SCROLLABLE */}
         <div className="px-4 py-6 sm:px-6 lg:px-8">
@@ -834,51 +1084,46 @@ function DelegationDataPage() {
                 <CheckCircle2 className="h-5 w-5 mr-2 text-green-500" />
                 {successMessage}
               </div>
-              <button onClick={() => setSuccessMessage("")} className="text-green-500 hover:text-green-700">
+              <button
+                onClick={() => setSuccessMessage("")}
+                className="text-green-500 hover:text-green-700"
+              >
                 <X className="h-5 w-5" />
               </button>
             </div>
           )}
 
-
           <div className="rounded-lg border border-purple-200 shadow-md bg-white overflow-hidden">
+            <div className="bg-gradient-to-r from-purple-50 to-pink-50 border-b border-purple-100 p-4">
+              {/* row */}
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                {/* Left side text */}
+                <div>
+                  <h2 className="text-purple-700 font-medium">
+                    {showHistory
+                      ? `Completed ${CONFIG.SOURCE_SHEET_NAME} Tasks`
+                      : `Pending ${CONFIG.SOURCE_SHEET_NAME} Tasks`}
+                  </h2>
+                  <p className="text-purple-600 text-sm">
+                    {showHistory
+                      ? `${CONFIG.PAGE_CONFIG.historyDescription} for ${
+                          userRole === "admin" ? "all" : "your"
+                        } tasks`
+                      : CONFIG.PAGE_CONFIG.description}
+                  </p>
+                </div>
 
-  <div className="bg-gradient-to-r from-purple-50 to-pink-50 border-b border-purple-100 p-4">
-  {/* row */}
-  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-    
-    {/* Left side text */}
-    <div>
-      <h2 className="text-purple-700 font-medium">
-        {showHistory
-          ? `Completed ${CONFIG.SOURCE_SHEET_NAME} Tasks`
-          : `Pending ${CONFIG.SOURCE_SHEET_NAME} Tasks`}
-      </h2>
-      <p className="text-purple-600 text-sm">
-        {showHistory
-          ? `${CONFIG.PAGE_CONFIG.historyDescription} for ${
-              userRole === 'admin' ? 'all' : 'your'
-            } tasks`
-          : CONFIG.PAGE_CONFIG.description}
-      </p>
-    </div>
-
-    {/* Right side button */}
-    <button
-      onClick={exportToCSV}
-      disabled={filteredAccountData.length === 0}
-      className="rounded-md bg-gradient-to-r from-green-600 to-teal-600 py-2 px-4 text-white hover:from-green-700 hover:to-teal-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center w-full sm:w-auto"
-    >
-      <Download className="h-4 w-4 mr-1" />
-      <span>Export CSV</span>
-    </button>
-  </div>
-</div>
-
-
-
-
-
+                {/* Right side button */}
+                <button
+                  onClick={exportToCSV}
+                  disabled={filteredAccountData.length === 0}
+                  className="rounded-md bg-gradient-to-r from-green-600 to-teal-600 py-2 px-4 text-white hover:from-green-700 hover:to-teal-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center w-full sm:w-auto"
+                >
+                  <Download className="h-4 w-4 mr-1" />
+                  <span>Export CSV</span>
+                </button>
+              </div>
+            </div>
 
             {loading ? (
               <div className="text-center py-10">
@@ -888,7 +1133,10 @@ function DelegationDataPage() {
             ) : error ? (
               <div className="bg-red-50 p-4 rounded-md text-red-800 text-center">
                 {error}{" "}
-                <button className="underline ml-2" onClick={() => window.location.reload()}>
+                <button
+                  className="underline ml-2"
+                  onClick={() => window.location.reload()}
+                >
                   Try again
                 </button>
               </div>
@@ -899,11 +1147,16 @@ function DelegationDataPage() {
                   <div className="flex flex-wrap items-center justify-between gap-4">
                     <div className="flex flex-col">
                       <div className="mb-2 flex items-center">
-                        <span className="text-sm font-medium text-purple-700">Filter by Date Range:</span>
+                        <span className="text-sm font-medium text-purple-700">
+                          Filter by Date Range:
+                        </span>
                       </div>
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-1">
                         <div className="flex items-center">
-                          <label htmlFor="start-date" className="text-sm text-gray-700 mr-1">
+                          <label
+                            htmlFor="start-date"
+                            className="text-sm text-gray-700 mr-1"
+                          >
                             From
                           </label>
                           <input
@@ -915,7 +1168,10 @@ function DelegationDataPage() {
                           />
                         </div>
                         <div className="flex items-center">
-                          <label htmlFor="end-date" className="text-sm text-gray-700 mr-1">
+                          <label
+                            htmlFor="end-date"
+                            className="text-sm text-gray-700 mr-1"
+                          >
                             To
                           </label>
                           <input
@@ -929,7 +1185,11 @@ function DelegationDataPage() {
                       </div>
                     </div>
 
-                    {(startDate || endDate || searchTerm) && (
+                    {(startDate ||
+                      endDate ||
+                      searchTerm ||
+                      givenByFilter ||
+                      nameFilter) && (
                       <button
                         onClick={resetFilters}
                         className="px-3 py-1 bg-red-100 text-red-700 rounded-md hover:bg-red-200 text-sm"
@@ -940,8 +1200,145 @@ function DelegationDataPage() {
                   </div>
                 </div>
 
+                <div className="sm:hidden overflow-x-auto">
+                  {filteredHistoryData.length > 0 ? (
+                    filteredHistoryData.map((history) => (
+                      <div
+                        key={history._id}
+                        className="bg-white rounded-lg shadow-md border mb-4 p-4 space-y-3"
+                      >
+                        {/* Header Section */}
+                        <div className="border-b pb-2">
+                          <div className="flex justify-between items-start">
+                            <div>
+                              <span className="text-xs font-medium text-gray-500">
+                                Timestamp:
+                              </span>
+                              <p className="text-sm font-semibold">
+                                {history["col0"] || "—"}
+                              </p>
+                            </div>
+                            <div className="text-right">
+                              <span className="text-xs font-medium text-gray-500">
+                                Task ID:
+                              </span>
+                              <p className="text-sm font-semibold">
+                                {history["col1"] || "—"}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Task Description */}
+                        <div className="bg-blue-50 p-2 rounded">
+                          <span className="text-xs font-semibold text-blue-700">
+                            Task:
+                          </span>
+                          <p className="text-sm text-gray-900 mt-1 whitespace-pre-wrap break-words">
+                            {history["col8"] || "—"}
+                          </p>
+                        </div>
+
+                        {/* Status and Dates */}
+                        <div className="grid grid-cols-2 gap-3">
+                          <div>
+                            <span className="text-xs font-medium text-gray-500">
+                              Status:
+                            </span>
+                            <span
+                              className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                                history["col2"] === "Done"
+                                  ? "bg-green-100 text-green-800"
+                                  : history["col2"] === "Extend date"
+                                  ? "bg-yellow-100 text-yellow-800"
+                                  : "bg-gray-100 text-gray-800"
+                              }`}
+                            >
+                              {history["col2"] || "—"}
+                            </span>
+                          </div>
+                          <div>
+                            <span className="text-xs font-medium text-gray-500">
+                              Next Target Date:
+                            </span>
+                            <p className="text-sm font-semibold">
+                              {formatDateForDisplay(history["col3"]) || "—"}
+                            </p>
+                          </div>
+                        </div>
+
+                        {/* Remarks */}
+                        <div className="bg-purple-50 p-2 rounded">
+                          <span className="text-xs font-semibold text-purple-700">
+                            Remarks:
+                          </span>
+                          <p className="text-sm text-gray-900 mt-1 break-words">
+                            {history["col4"] || "—"}
+                          </p>
+                        </div>
+
+                        {/* Uploaded Image */}
+                        <div>
+                          <span className="text-xs font-medium text-gray-500">
+                            Uploaded Image:
+                          </span>
+                          <div className="mt-1">
+                            {history["col5"] ? (
+                              <a
+                                href={history["col5"]}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-blue-600 hover:text-blue-800 underline flex items-center"
+                              >
+                                {/* <img
+            src={history["col5"] || "/api/placeholder/32/32"}
+            alt="Attachment"
+            className="h-8 w-8 object-cover rounded-md mr-2"
+          /> */}
+                                View Attachment
+                              </a>
+                            ) : (
+                              <span className="text-gray-400 text-sm">
+                                No attachment
+                              </span>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* User and Given By (for admin) */}
+                        <div className="grid grid-cols-2 gap-3 border-t pt-2">
+                          {userRole === "admin" && (
+                            <div>
+                              <span className="text-xs font-medium text-gray-500">
+                                User:
+                              </span>
+                              <p className="text-sm font-semibold">
+                                {history["col7"] || "—"}
+                              </p>
+                            </div>
+                          )}
+                          <div>
+                            <span className="text-xs font-medium text-gray-500">
+                              Given By:
+                            </span>
+                            <p className="text-sm font-semibold">
+                              {history["col9"] || "—"}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="px-6 py-4 text-center text-gray-500">
+                      {searchTerm || startDate || endDate
+                        ? "No historical records matching your filters"
+                        : "No completed records found"}
+                    </div>
+                  )}
+                </div>
+
                 {/* History Table */}
-                <div className="overflow-x-auto">
+                <div className=" hidden sm:flex overflow-x-auto">
                   <table className="min-w-full divide-y divide-gray-200">
                     <thead className="bg-gray-50">
                       <tr>
@@ -976,15 +1373,20 @@ function DelegationDataPage() {
                         </th>
                       </tr>
                     </thead>
+
                     <tbody className="bg-white divide-y divide-gray-200">
                       {filteredHistoryData.length > 0 ? (
                         filteredHistoryData.map((history) => (
                           <tr key={history._id} className="hover:bg-gray-50">
                             <td className="px-6 py-4 whitespace-nowrap">
-                              <div className="text-sm font-medium text-gray-900">{history["col0"] || "—"}</div>
+                              <div className="text-sm font-medium text-gray-900">
+                                {history["col0"] || "—"}
+                              </div>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
-                              <div className="text-sm text-gray-900">{history["col1"] || "—"}</div>
+                              <div className="text-sm text-gray-900">
+                                {history["col1"] || "—"}
+                              </div>
                             </td>
                             <td className="px-6 py-4 min-w-[250px]">
                               <div
@@ -996,18 +1398,21 @@ function DelegationDataPage() {
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
                               <span
-                                className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${history["col2"] === "Done"
-                                  ? "bg-green-100 text-green-800"
-                                  : history["col2"] === "Extend date"
+                                className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                                  history["col2"] === "Done"
+                                    ? "bg-green-100 text-green-800"
+                                    : history["col2"] === "Extend date"
                                     ? "bg-yellow-100 text-yellow-800"
                                     : "bg-gray-100 text-gray-800"
-                                  }`}
+                                }`}
                               >
                                 {history["col2"] || "—"}
                               </span>
                             </td>
                             <td className="px-6 py-4 whitespace-nowrap">
-                              <div className="text-sm text-gray-900">{formatDateForDisplay(history["col3"]) || "—"}</div>
+                              <div className="text-sm text-gray-900">
+                                {formatDateForDisplay(history["col3"]) || "—"}
+                              </div>
                             </td>
                             <td className="px-6 py-4 bg-purple-50 min-w-[200px]">
                               <div
@@ -1025,30 +1430,42 @@ function DelegationDataPage() {
                                   rel="noopener noreferrer"
                                   className="text-blue-600 hover:text-blue-800 underline flex items-center"
                                 >
-                                  <img
-                                    src={history["col5"] || "/api/placeholder/32/32"}
+                                  {/* <img
+                                    src={
+                                      history["col5"] ||
+                                      "/api/placeholder/32/32"
+                                    }
                                     alt="Attachment"
                                     className="h-8 w-8 object-cover rounded-md mr-2"
-                                  />
+                                  /> */}
                                   View
                                 </a>
                               ) : (
-                                <span className="text-gray-400">No attachment</span>
+                                <span className="text-gray-400">
+                                  No attachment
+                                </span>
                               )}
                             </td>
                             {userRole === "admin" && (
                               <td className="px-6 py-4 whitespace-nowrap">
-                                <div className="text-sm text-gray-900">{history["col7"] || "—"}</div>
+                                <div className="text-sm text-gray-900">
+                                  {history["col7"] || "—"}
+                                </div>
                               </td>
                             )}
                             <td className="px-6 py-4 whitespace-nowrap">
-                              <div className="text-sm text-gray-900">{history["col9"] || "—"}</div>
+                              <div className="text-sm text-gray-900">
+                                {history["col9"] || "—"}
+                              </div>
                             </td>
                           </tr>
                         ))
                       ) : (
                         <tr>
-                          <td colSpan={userRole === "admin" ? 9 : 8} className="px-6 py-4 text-center text-gray-500">
+                          <td
+                            colSpan={userRole === "admin" ? 9 : 8}
+                            className="px-6 py-4 text-center text-gray-500"
+                          >
                             {searchTerm || startDate || endDate
                               ? "No historical records matching your filters"
                               : "No completed records found"}
@@ -1060,174 +1477,664 @@ function DelegationDataPage() {
                 </div>
               </>
             ) : (
-              /* Regular Tasks Table */
-              <div className="overflow-x-auto">
-                <div className="flex justify-between items-center mb-4 px-6 pt-4">
-                  <h3 className="text-lg font-semibold text-gray-700">Pending Tasks</h3>
+              <>
+                {/* Regular Tasks Table */}
+                <div className="hidden sm:flex overflow-x-auto">
+                  <div className="flex justify-between items-center mb-4 px-6 pt-4">
+                    <h3 className="text-lg font-semibold text-gray-700">
+                      Pending Tasks
+                    </h3>
+                  </div>
+                  <table className="min-w-full divide-y divide-gray-200">
+                    <thead className="bg-gray-50">
+                      <tr>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          <input
+                            type="checkbox"
+                            className="h-4 w-4 rounded border-gray-300 text-purple-600 focus:ring-purple-500"
+                            checked={
+                              filteredAccountData.length > 0 &&
+                              selectedItems.size === filteredAccountData.length
+                            }
+                            onChange={handleSelectAllItems}
+                          />
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Task ID
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Department
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Given By
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Name
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Task Description
+                        </th>
+                        <th
+                          className={`px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider ${
+                            !accountData["col17"] ? "bg-yellow-50" : ""
+                          }`}
+                        >
+                          Task Start Date
+                        </th>
+                        <th
+                          className={`px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider ${
+                            !accountData["col17"] ? "bg-green-50" : ""
+                          }`}
+                        >
+                          Planned Date
+                        </th>
 
-                </div>
-                <table className="min-w-full divide-y divide-gray-200">
-                  <thead className="bg-gray-50">
-                    <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        <input
-                          type="checkbox"
-                          className="h-4 w-4 rounded border-gray-300 text-purple-600 focus:ring-purple-500"
-                          checked={filteredAccountData.length > 0 && selectedItems.size === filteredAccountData.length}
-                          onChange={handleSelectAllItems}
-                        />
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Task ID
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Department
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Given By
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Name
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Task Description
-                      </th>
-                      <th
-                        className={`px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider ${!accountData["col17"] ? "bg-yellow-50" : ""
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-yellow-50">
+                          Delay days
+                        </th>
+
+                        <th
+                          className={`px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider ${
+                            !accountData["col17"] ? "bg-blue-50" : ""
                           }`}
-                      >
-                        Task Start Date
-                      </th>
-                      <th
-                        className={`px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider ${!accountData["col17"] ? "bg-green-50" : ""
+                        >
+                          Status
+                        </th>
+                        <th
+                          className={`px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider ${
+                            !accountData["col17"] ? "bg-indigo-50" : ""
                           }`}
-                      >
-                        Planned Date
-                      </th>
-                      <th
-                        className={`px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider ${!accountData["col17"] ? "bg-blue-50" : ""
+                        >
+                          Next Target Date
+                        </th>
+                        <th
+                          className={`px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider ${
+                            !accountData["col17"] ? "bg-purple-50" : ""
                           }`}
-                      >
-                        Status
-                      </th>
-                      <th
-                        className={`px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider ${!accountData["col17"] ? "bg-indigo-50" : ""
+                        >
+                          Remarks
+                        </th>
+                        <th
+                          className={`px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider ${
+                            !accountData["col17"] ? "bg-orange-50" : ""
                           }`}
-                      >
-                        Next Target Date
-                      </th>
-                      <th
-                        className={`px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider ${!accountData["col17"] ? "bg-purple-50" : ""
-                          }`}
-                      >
-                        Remarks
-                      </th>
-                      <th
-                        className={`px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider ${!accountData["col17"] ? "bg-orange-50" : ""
-                          }`}
-                      >
-                        Upload Image
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody className="bg-white divide-y divide-gray-200">
-                    {filteredAccountData.length > 0 ? (
-                      filteredAccountData.map((account) => {
-                        const isSelected = selectedItems.has(account._id)
-                        const rowColorClass = getRowColor(account["col17"])
-                        return (
-                          <tr
-                            key={account._id}
-                            className={`${isSelected ? "bg-purple-50" : ""} hover:bg-gray-50 ${rowColorClass}`}
+                        >
+                          Upload Image
+                        </th>
+
+                        <th
+                          className={`px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider`}
+                        >
+                          Priority
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody className="bg-white divide-y divide-gray-200">
+                      {filteredAccountData.length > 0 ? (
+                        filteredAccountData.map((account) => {
+                          const isSelected = selectedItems.has(account._id);
+                          const rowColorClass = getRowColor(account["col17"]);
+                          return (
+                            <tr
+                              key={account._id}
+                              className={`${
+                                isSelected ? "bg-purple-50" : ""
+                              } hover:bg-gray-50 ${rowColorClass}`}
+                            >
+                              <td className="px-6 py-4 whitespace-nowrap">
+                                <input
+                                  type="checkbox"
+                                  className="h-4 w-4 rounded border-gray-300 text-purple-600 focus:ring-purple-500"
+                                  checked={isSelected}
+                                  onChange={(e) =>
+                                    handleCheckboxClick(e, account._id)
+                                  }
+                                />
+                              </td>
+                              <td className="px-6 py-4 whitespace-nowrap">
+                                <div className="text-sm text-gray-900">
+                                  {account["col1"] || "—"}
+                                </div>
+                              </td>
+                              <td className="px-6 py-4 whitespace-nowrap">
+                                <div className="text-sm text-gray-900">
+                                  {account["col2"] || "—"}
+                                </div>
+                              </td>
+                              <td className="px-6 py-4 whitespace-nowrap">
+                                <div className="text-sm text-gray-900">
+                                  {account["col3"] || "—"}
+                                </div>
+                              </td>
+                              <td className="px-6 py-4 whitespace-nowrap">
+                                <div className="text-sm text-gray-900">
+                                  {account["col4"] || "—"}
+                                </div>
+                              </td>
+                              <td className="px-6 py-4 min-w-[250px]">
+                                <div
+                                  className="text-sm text-gray-900 max-w-md whitespace-normal break-words"
+                                  title={account["col5"]}
+                                >
+                                  {account["col5"] || "—"}
+                                </div>
+                              </td>
+                              <td
+                                className={`px-6 py-4 whitespace-nowrap ${
+                                  !account["col17"] ? "bg-yellow-50" : ""
+                                }`}
+                              >
+                                <div className="text-sm text-gray-900">
+                                  {formatDateForDisplay(account["col6"])}
+                                </div>
+                              </td>
+                              <td
+                                className={`px-6 py-4 whitespace-nowrap ${
+                                  !account["col17"] ? "bg-green-50" : ""
+                                }`}
+                              >
+                                <div className="text-sm text-gray-900">
+                                  {formatDateForDisplay(account["col10"])}
+                                </div>
+                              </td>
+
+                              <td className="px-6 py-4 whitespace-nowrap bg-yellow-50">
+                                <div className="text-sm text-gray-900">
+                                  {(() => {
+                                    const delayDays = calculateDelayDays(
+                                      account["col6"]
+                                    );
+                                    if (delayDays > 0) {
+                                      return (
+                                        <span className="flex items-center">
+                                          <span className="text-red-600 font-semibold">
+                                            {delayDays} days
+                                          </span>
+                                          <span className="ml-1 text-xs text-red-500">
+                                            delayed
+                                          </span>
+                                        </span>
+                                      );
+                                    } else if (account["col6"]) {
+                                      const plannedDate = parseDateFromDDMMYYYY(
+                                        account["col6"]
+                                      );
+                                      const today = new Date();
+                                      today.setHours(0, 0, 0, 0);
+                                      if (plannedDate) {
+                                        plannedDate.setHours(0, 0, 0, 0);
+                                        if (
+                                          plannedDate.getTime() ===
+                                          today.getTime()
+                                        ) {
+                                          return (
+                                            <span className="text-blue-600 font-medium">
+                                              Due Today
+                                            </span>
+                                          );
+                                        } else if (
+                                          plannedDate.getTime() >
+                                          today.getTime()
+                                        ) {
+                                          return (
+                                            <span className="text-green-600">
+                                              On Schedule
+                                            </span>
+                                          );
+                                        }
+                                      }
+                                    }
+                                    return "—";
+                                  })()}
+                                </div>
+                              </td>
+
+                              <td
+                                className={`px-6 py-4 whitespace-nowrap ${
+                                  !account["col17"] ? "bg-blue-50" : ""
+                                }`}
+                              >
+                                <select
+                                  disabled={!isSelected}
+                                  value={statusData[account._id] || ""}
+                                  onChange={(e) =>
+                                    handleStatusChange(
+                                      account._id,
+                                      e.target.value
+                                    )
+                                  }
+                                  className="border border-gray-300 rounded-md px-2 py-1 w-full disabled:bg-gray-100 disabled:cursor-not-allowed"
+                                >
+                                  <option value="">Select</option>
+                                  <option value="Done">Done</option>
+                                  <option value="Extend date">
+                                    Extend date
+                                  </option>
+                                </select>
+                              </td>
+                              <td
+                                className={`px-6 py-4 whitespace-nowrap ${
+                                  !account["col17"] ? "bg-indigo-50" : ""
+                                }`}
+                              >
+                                <input
+                                  type="date"
+                                  disabled={
+                                    !isSelected ||
+                                    statusData[account._id] !== "Extend date"
+                                  }
+                                  value={
+                                    nextTargetDate[account._id]
+                                      ? (() => {
+                                          const dateStr =
+                                            nextTargetDate[account._id];
+                                          if (
+                                            dateStr &&
+                                            dateStr.includes("/")
+                                          ) {
+                                            const [day, month, year] =
+                                              dateStr.split("/");
+                                            return `${year}-${month.padStart(
+                                              2,
+                                              "0"
+                                            )}-${day.padStart(2, "0")}`;
+                                          }
+                                          return dateStr;
+                                        })()
+                                      : ""
+                                  }
+                                  onChange={(e) => {
+                                    const inputDate = e.target.value;
+                                    if (inputDate) {
+                                      const [year, month, day] =
+                                        inputDate.split("-");
+                                      const formattedDate = `${day}/${month}/${year}`;
+                                      handleNextTargetDateChange(
+                                        account._id,
+                                        formattedDate
+                                      );
+                                    } else {
+                                      handleNextTargetDateChange(
+                                        account._id,
+                                        ""
+                                      );
+                                    }
+                                  }}
+                                  className="border border-gray-300 rounded-md px-2 py-1 w-full disabled:bg-gray-100 disabled:cursor-not-allowed"
+                                />
+                              </td>
+                              <td
+                                className={`px-6 py-4 whitespace-nowrap ${
+                                  !account["col17"] ? "bg-purple-50" : ""
+                                }`}
+                              >
+                                <input
+                                  type="text"
+                                  placeholder="Enter remarks"
+                                  disabled={!isSelected}
+                                  value={remarksData[account._id] || ""}
+                                  onChange={(e) =>
+                                    setRemarksData((prev) => ({
+                                      ...prev,
+                                      [account._id]: e.target.value,
+                                    }))
+                                  }
+                                  className="border rounded-md px-2 py-1 w-full border-gray-300 disabled:bg-gray-100 disabled:cursor-not-allowed"
+                                />
+                              </td>
+
+                              <td
+                                className={`px-6 py-4 whitespace-nowrap ${
+                                  !account["col17"] ? "bg-orange-50" : ""
+                                }`}
+                              >
+                                {account.image ? (
+                                  <div className="flex items-center">
+                                    <img
+                                      src={
+                                        typeof account.image === "string"
+                                          ? account.image
+                                          : URL.createObjectURL(account.image)
+                                      }
+                                      alt="Receipt"
+                                      className="h-10 w-10 object-cover rounded-md mr-2"
+                                    />
+                                    <div className="flex flex-col">
+                                      <span className="text-xs text-gray-500">
+                                        {account.image instanceof File
+                                          ? account.image.name
+                                          : "Uploaded Receipt"}
+                                      </span>
+                                      {account.image instanceof File ? (
+                                        <span className="text-xs text-green-600">
+                                          Ready to upload
+                                        </span>
+                                      ) : (
+                                        <button
+                                          className="text-xs text-purple-600 hover:text-purple-800"
+                                          onClick={() =>
+                                            window.open(account.image, "_blank")
+                                          }
+                                        >
+                                          View Full Image
+                                        </button>
+                                      )}
+                                    </div>
+                                  </div>
+                                ) : (
+                                  <label
+                                    className={`flex items-center cursor-pointer ${
+                                      account["col9"]?.toUpperCase() === "YES"
+                                        ? "text-red-600 font-medium"
+                                        : "text-purple-600"
+                                    } hover:text-purple-800`}
+                                  >
+                                    <Upload className="h-4 w-4 mr-1" />
+                                    <span className="text-xs">
+                                      {account["col9"]?.toUpperCase() === "YES"
+                                        ? "Required Upload"
+                                        : "Upload Image"}
+                                      {account["col9"]?.toUpperCase() ===
+                                        "YES" && (
+                                        <span className="text-red-500 ml-1">
+                                          *
+                                        </span>
+                                      )}
+                                    </span>
+                                    <input
+                                      type="file"
+                                      className="hidden"
+                                      accept="image/*"
+                                      onChange={(e) =>
+                                        handleImageUpload(account._id, e)
+                                      }
+                                      disabled={!isSelected}
+                                    />
+                                  </label>
+                                )}
+                              </td>
+
+                              <td className="px-6 py-4 whitespace-nowrap">
+                                <div className="text-sm text-gray-900">
+                                  {account["col15"] || "—"}
+                                </div>
+                              </td>
+                            </tr>
+                          );
+                        })
+                      ) : (
+                        <tr>
+                          <td
+                            colSpan={12}
+                            className="px-6 py-4 text-center text-gray-500"
                           >
-                            <td className="px-6 py-4 whitespace-nowrap">
+                            {searchTerm
+                              ? "No tasks matching your search"
+                              : "No pending tasks found"}
+                          </td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+
+                <div className=" sm:hidden overflow-x-auto">
+                  <div className="flex justify-between items-center mb-4 px-4 pt-4">
+                    <h3 className="text-lg font-semibold text-gray-700">
+                      Pending Tasks
+                    </h3>
+                  </div>
+
+                  {filteredAccountData.length > 0 ? (
+                    filteredAccountData.map((account) => {
+                      const isSelected = selectedItems.has(account._id);
+                      const rowColorClass = getRowColor(account["col17"]);
+
+                      return (
+                        <div
+                          className={`bg-white rounded-lg shadow-md border-2 mb-4 overflow-hidden ${rowColorClass}`}
+                        >
+                          {/* Header Section with Checkbox and Basic Info */}
+                          <div className="bg-gradient-to-r from-purple-50 to-pink-50 p-3 border-b border-purple-200">
+                            <div className="flex items-start gap-3">
                               <input
                                 type="checkbox"
-                                className="h-4 w-4 rounded border-gray-300 text-purple-600 focus:ring-purple-500"
+                                className="h-5 w-5 mt-1 rounded border-gray-300 text-purple-600 focus:ring-purple-500"
                                 checked={isSelected}
-                                onChange={(e) => handleCheckboxClick(e, account._id)}
+                                onChange={(e) =>
+                                  handleCheckboxClick(e, account._id)
+                                }
                               />
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap">
-                              <div className="text-sm text-gray-900">{account["col1"] || "—"}</div>
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap">
-                              <div className="text-sm text-gray-900">{account["col2"] || "—"}</div>
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap">
-                              <div className="text-sm text-gray-900">{account["col3"] || "—"}</div>
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap">
-                              <div className="text-sm text-gray-900">{account["col4"] || "—"}</div>
-                            </td>
-                            <td className="px-6 py-4 min-w-[250px]">
-                              <div
-                                className="text-sm text-gray-900 max-w-md whitespace-normal break-words"
-                                title={account["col5"]}
-                              >
-                                {account["col5"] || "—"}
+                              <div className="flex-1">
+                                <div className="flex justify-between items-start mb-2">
+                                  <div>
+                                    <span className="text-xs font-medium text-purple-600">
+                                      Task ID:
+                                    </span>
+                                    <p className="text-sm font-bold text-gray-900">
+                                      {account["col1"] || "—"}
+                                    </p>
+                                  </div>
+                                  <div className="text-right">
+                                    <span className="text-xs font-medium text-purple-600">
+                                      Priority:
+                                    </span>
+                                    <p className="text-sm font-semibold text-gray-900">
+                                      {account["col15"] || "—"}
+                                    </p>
+                                  </div>
+                                </div>
+
+                                <div className="grid grid-cols-3 gap-2 text-xs">
+                                  <div>
+                                    <span className="text-gray-500">
+                                      Department:
+                                    </span>
+                                    <p className="font-medium text-gray-900">
+                                      {account["col2"] || "—"}
+                                    </p>
+                                  </div>
+                                  <div>
+                                    <span className="text-gray-500">
+                                      Given By:
+                                    </span>
+                                    <p className="font-medium text-gray-900">
+                                      {account["col3"] || "—"}
+                                    </p>
+                                  </div>
+                                  <div className="">
+                                    <span className="text-gray-500">
+                                      Assigned To:
+                                    </span>
+                                    <p className="font-medium text-gray-900">
+                                      {account["col4"] || "—"}
+                                    </p>
+                                  </div>
+                                </div>
                               </div>
-                            </td>
-                            <td className={`px-6 py-4 whitespace-nowrap ${!account["col17"] ? "bg-yellow-50" : ""}`}>
-                              <div className="text-sm text-gray-900">{formatDateForDisplay(account["col6"])}</div>
-                            </td>
-                            <td className={`px-6 py-4 whitespace-nowrap ${!account["col17"] ? "bg-green-50" : ""}`}>
-                              <div className="text-sm text-gray-900">{formatDateForDisplay(account["col10"])}</div>
-                            </td>
-                            <td className={`px-6 py-4 whitespace-nowrap ${!account["col17"] ? "bg-blue-50" : ""}`}>
+                            </div>
+                          </div>
+
+                          {/* Task Description Section */}
+                          <div className="p-3 bg-blue-50 border-b border-blue-100">
+                            <span className="text-xs font-semibold text-blue-700 uppercase">
+                              Task Description
+                            </span>
+                            <p className="text-sm text-gray-900 mt-1 whitespace-pre-wrap break-words leading-relaxed">
+                              {account["col5"] || "—"}
+                            </p>
+                          </div>
+
+                          {/* Dates and Status Section */}
+                          <div className="p-3 bg-yellow-50 border-b border-yellow-100">
+                            <div className="grid grid-cols-2 gap-3 text-xs">
+                              <div>
+                                <span className="text-gray-600 font-medium">
+                                  Start Date:
+                                </span>
+                                <p className="text-sm font-semibold text-gray-900 mt-1">
+                                  {formatDateForDisplay(account["col6"])}
+                                </p>
+                              </div>
+                              <div>
+                                <span className="text-gray-600 font-medium">
+                                  Planned Date:
+                                </span>
+                                <p className="text-sm font-semibold text-gray-900 mt-1">
+                                  {formatDateForDisplay(account["col10"])}
+                                </p>
+                              </div>
+                              <div className="col-span-2">
+                                <span className="text-gray-600 font-medium">
+                                  Status:
+                                </span>
+                                <div className="mt-1">
+                                  {(() => {
+                                    const delayDays = calculateDelayDays(
+                                      account["col6"]
+                                    );
+                                    if (delayDays > 0) {
+                                      return (
+                                        <span className="inline-flex items-center px-2 py-1 rounded-full bg-red-100 text-red-700">
+                                          <span className="font-bold">
+                                            {delayDays} days delayed
+                                          </span>
+                                        </span>
+                                      );
+                                    } else if (account["col6"]) {
+                                      const plannedDate = parseDateFromDDMMYYYY(
+                                        account["col6"]
+                                      );
+                                      const today = new Date();
+                                      today.setHours(0, 0, 0, 0);
+                                      if (plannedDate) {
+                                        plannedDate.setHours(0, 0, 0, 0);
+                                        if (
+                                          plannedDate.getTime() ===
+                                          today.getTime()
+                                        ) {
+                                          return (
+                                            <span className="inline-flex items-center px-2 py-1 rounded-full bg-blue-100 text-blue-700 font-semibold">
+                                              Due Today
+                                            </span>
+                                          );
+                                        } else if (
+                                          plannedDate.getTime() >
+                                          today.getTime()
+                                        ) {
+                                          return (
+                                            <span className="inline-flex items-center px-2 py-1 rounded-full bg-green-100 text-green-700 font-semibold">
+                                              On Schedule
+                                            </span>
+                                          );
+                                        }
+                                      }
+                                    }
+                                    return (
+                                      <span className="text-gray-500">—</span>
+                                    );
+                                  })()}
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Action Section */}
+                          <div className="p-3 space-y-3">
+                            <div>
+                              <label className="text-xs font-semibold text-gray-700 mb-1 block">
+                                Status Selection
+                              </label>
                               <select
                                 disabled={!isSelected}
                                 value={statusData[account._id] || ""}
-                                onChange={(e) => handleStatusChange(account._id, e.target.value)}
-                                className="border border-gray-300 rounded-md px-2 py-1 w-full disabled:bg-gray-100 disabled:cursor-not-allowed"
+                                onChange={(e) =>
+                                  handleStatusChange(
+                                    account._id,
+                                    e.target.value
+                                  )
+                                }
+                                className="border border-gray-300 rounded-lg px-3 py-2 w-full text-sm disabled:bg-gray-100 disabled:cursor-not-allowed focus:ring-2 focus:ring-purple-500"
                               >
-                                <option value="">Select</option>
+                                <option value="">Select Status</option>
                                 <option value="Done">Done</option>
                                 <option value="Extend date">Extend date</option>
                               </select>
-                            </td>
-                            <td className={`px-6 py-4 whitespace-nowrap ${!account["col17"] ? "bg-indigo-50" : ""}`}>
+                            </div>
+
+                            <div>
+                              <label className="text-xs font-semibold text-gray-700 mb-1 block">
+                                Next Target Date
+                              </label>
                               <input
                                 type="date"
-                                disabled={!isSelected || statusData[account._id] !== "Extend date"}
+                                disabled={
+                                  !isSelected ||
+                                  statusData[account._id] !== "Extend date"
+                                }
                                 value={
                                   nextTargetDate[account._id]
                                     ? (() => {
-                                      const dateStr = nextTargetDate[account._id]
-                                      if (dateStr && dateStr.includes("/")) {
-                                        const [day, month, year] = dateStr.split("/")
-                                        return `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`
-                                      }
-                                      return dateStr
-                                    })()
+                                        const dateStr =
+                                          nextTargetDate[account._id];
+                                        if (dateStr && dateStr.includes("/")) {
+                                          const [day, month, year] =
+                                            dateStr.split("/");
+                                          return `${year}-${month.padStart(
+                                            2,
+                                            "0"
+                                          )}-${day.padStart(2, "0")}`;
+                                        }
+                                        return dateStr;
+                                      })()
                                     : ""
                                 }
                                 onChange={(e) => {
-                                  const inputDate = e.target.value
+                                  const inputDate = e.target.value;
                                   if (inputDate) {
-                                    const [year, month, day] = inputDate.split("-")
-                                    const formattedDate = `${day}/${month}/${year}`
-                                    handleNextTargetDateChange(account._id, formattedDate)
+                                    const [year, month, day] =
+                                      inputDate.split("-");
+                                    const formattedDate = `${day}/${month}/${year}`;
+                                    handleNextTargetDateChange(
+                                      account._id,
+                                      formattedDate
+                                    );
                                   } else {
-                                    handleNextTargetDateChange(account._id, "")
+                                    handleNextTargetDateChange(account._id, "");
                                   }
                                 }}
-                                className="border border-gray-300 rounded-md px-2 py-1 w-full disabled:bg-gray-100 disabled:cursor-not-allowed"
+                                className="border border-gray-300 rounded-lg px-3 py-2 w-full text-sm disabled:bg-gray-100 disabled:cursor-not-allowed focus:ring-2 focus:ring-purple-500"
                               />
-                            </td>
-                            <td className={`px-6 py-4 whitespace-nowrap ${!account["col17"] ? "bg-purple-50" : ""}`}>
+                            </div>
+
+                            <div>
+                              <label className="text-xs font-semibold text-gray-700 mb-1 block">
+                                Remarks
+                              </label>
                               <input
                                 type="text"
                                 placeholder="Enter remarks"
                                 disabled={!isSelected}
                                 value={remarksData[account._id] || ""}
-                                onChange={(e) => setRemarksData((prev) => ({ ...prev, [account._id]: e.target.value }))}
-                                className="border rounded-md px-2 py-1 w-full border-gray-300 disabled:bg-gray-100 disabled:cursor-not-allowed"
+                                onChange={(e) =>
+                                  setRemarksData((prev) => ({
+                                    ...prev,
+                                    [account._id]: e.target.value,
+                                  }))
+                                }
+                                className="border border-gray-300 rounded-lg px-3 py-2 w-full text-sm disabled:bg-gray-100 disabled:cursor-not-allowed focus:ring-2 focus:ring-purple-500"
                               />
-                            </td>
-                            <td className={`px-6 py-4 whitespace-nowrap ${!account["col17"] ? "bg-orange-50" : ""}`}>
+                            </div>
+
+                            <div>
+                              <label className="text-xs font-semibold text-gray-700 mb-1 block">
+                                Upload Image
+                                {account["col9"]?.toUpperCase() === "YES" && (
+                                  <span className="text-red-500 ml-1">*</span>
+                                )}
+                              </label>
                               {account.image ? (
-                                <div className="flex items-center">
+                                <div className="flex items-center p-2 bg-gray-50 rounded-lg border border-gray-200">
                                   <img
                                     src={
                                       typeof account.image === "string"
@@ -1235,67 +2142,84 @@ function DelegationDataPage() {
                                         : URL.createObjectURL(account.image)
                                     }
                                     alt="Receipt"
-                                    className="h-10 w-10 object-cover rounded-md mr-2"
+                                    className="h-12 w-12 object-cover rounded-md mr-3"
                                   />
-                                  <div className="flex flex-col">
-                                    <span className="text-xs text-gray-500">
-                                      {account.image instanceof File ? account.image.name : "Uploaded Receipt"}
+                                  <div className="flex flex-col flex-1">
+                                    <span className="text-xs text-gray-600 font-medium">
+                                      {account.image instanceof File
+                                        ? account.image.name
+                                        : "Uploaded Receipt"}
                                     </span>
                                     {account.image instanceof File ? (
-                                      <span className="text-xs text-green-600">Ready to upload</span>
+                                      <span className="text-xs text-green-600 font-semibold">
+                                        ✓ Ready to upload
+                                      </span>
                                     ) : (
                                       <button
-                                        className="text-xs text-purple-600 hover:text-purple-800"
-                                        onClick={() => window.open(account.image, "_blank")}
+                                        className="text-xs text-purple-600 hover:text-purple-800 font-medium text-left"
+                                        onClick={() =>
+                                          window.open(account.image, "_blank")
+                                        }
                                       >
-                                        View Full Image
+                                        View Full Image →
                                       </button>
                                     )}
                                   </div>
                                 </div>
                               ) : (
                                 <label
-                                  className={`flex items-center cursor-pointer ${account["col9"]?.toUpperCase() === "YES"
-                                    ? "text-red-600 font-medium"
-                                    : "text-purple-600"
-                                    } hover:text-purple-800`}
+                                  className={`flex items-center justify-center cursor-pointer border-2 border-dashed rounded-lg p-3 ${
+                                    account["col9"]?.toUpperCase() === "YES"
+                                      ? "border-red-300 bg-red-50 hover:bg-red-100"
+                                      : "border-purple-300 bg-purple-50 hover:bg-purple-100"
+                                  } transition-colors`}
                                 >
-                                  <Upload className="h-4 w-4 mr-1" />
-                                  <span className="text-xs">
-                                    {account["col9"]?.toUpperCase() === "YES" ? "Required Upload" : "Upload Image"}
-                                    {account["col9"]?.toUpperCase() === "YES" && (
-                                      <span className="text-red-500 ml-1">*</span>
-                                    )}
+                                  <Upload className="h-5 w-5 mr-2" />
+                                  <span
+                                    className={`text-sm font-medium ${
+                                      account["col9"]?.toUpperCase() === "YES"
+                                        ? "text-red-600"
+                                        : "text-purple-600"
+                                    }`}
+                                  >
+                                    {account["col9"]?.toUpperCase() === "YES"
+                                      ? "Required Upload"
+                                      : "Upload Image"}
                                   </span>
                                   <input
                                     type="file"
                                     className="hidden"
                                     accept="image/*"
-                                    onChange={(e) => handleImageUpload(account._id, e)}
+                                    onChange={(e) =>
+                                      handleImageUpload(account._id, e)
+                                    }
                                     disabled={!isSelected}
                                   />
                                 </label>
                               )}
-                            </td>
-                          </tr>
-                        )
-                      })
-                    ) : (
-                      <tr>
-                        <td colSpan={12} className="px-6 py-4 text-center text-gray-500">
-                          {searchTerm ? "No tasks matching your search" : "No pending tasks found"}
-                        </td>
-                      </tr>
-                    )}
-                  </tbody>
-                </table>
-              </div>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })
+                  ) : (
+                    <div
+                      colSpan={12}
+                      className="px-6 py-4 text-center text-gray-500"
+                    >
+                      {searchTerm
+                        ? "No tasks matching your search"
+                        : "No pending tasks found"}
+                    </div>
+                  )}
+                </div>
+              </>
             )}
           </div>
         </div>
       </div>
     </AdminLayout>
-  )
+  );
 }
 
-export default DelegationDataPage
+export default DelegationDataPage;

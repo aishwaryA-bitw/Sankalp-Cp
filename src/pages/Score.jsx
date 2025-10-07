@@ -275,8 +275,10 @@ function Score() {
               </button>
             </div>
           ) : (
-            /* Scoring Table */
-            <div className="overflow-x-auto">
+
+            <>
+            {/* Scoring Table */}
+           <div className="hidden sm:flex overflow-x-auto">
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50">
                   <tr>
@@ -354,6 +356,95 @@ function Score() {
                 </tbody>
               </table>
             </div>
+
+
+                  <div className="sm:hidden overflow-x-auto">
+  {filteredScoringData.length > 0 ? (
+    filteredScoringData.map((record) => (
+      <div
+        key={record._id}
+        className="bg-white rounded-lg shadow-md border-2 mb-4 overflow-hidden"
+      >
+        {/* Header Section */}
+        <div className="bg-gradient-to-r from-purple-50 to-pink-50 p-3 border-b border-purple-200">
+          <div className="flex justify-between items-start mb-2">
+            <div>
+              <span className="text-xs font-medium text-purple-600">Name:</span>
+              <p className="text-sm font-bold text-gray-900">
+                {record.name || "—"}
+              </p>
+            </div>
+            <div className="text-right">
+              <span className="text-xs font-medium text-purple-600">Total Pending:</span>
+              <p className="text-sm font-semibold text-gray-900">
+                {record.totalPending || "—"}
+              </p>
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-2 text-xs">
+            <div>
+              <span className="text-gray-500">Start Date:</span>
+              <p className="font-medium text-gray-900">{record.startDate || "—"}</p>
+            </div>
+            <div>
+              <span className="text-gray-500">End Date:</span>
+              <p className="font-medium text-gray-900">{record.endDate || "—"}</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Target & Achievement Section */}
+        <div className="p-3 bg-blue-50 border-b border-blue-100">
+          <span className="text-xs font-semibold text-blue-700 uppercase mb-2 block">
+            Target & Achievement
+          </span>
+          <div className="grid grid-cols-2 gap-3 text-xs">
+            <div>
+              <span className="text-gray-600 font-medium">Target:</span>
+              <p className="text-sm font-semibold text-gray-900 mt-1">
+                {record.target || "—"}
+              </p>
+            </div>
+            <div>
+              <span className="text-gray-600 font-medium">Achievement:</span>
+              <p className={`text-sm font-semibold mt-1 ${getAchievementColor(record.target, record.achievement)}`}>
+                {record.achievement || "—"}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Score Performance Section */}
+        <div className="p-3 bg-yellow-50">
+          <span className="text-xs font-semibold text-yellow-700 uppercase mb-2 block">
+            Performance Scores
+          </span>
+          <div className="grid grid-cols-1 gap-3 text-xs">
+            <div>
+              <span className="text-gray-600 font-medium">Work Not Done:</span>
+              <p className={`text-sm font-semibold mt-1 ${getScorePercentageColor(record.overallScoreWorkNotDone)}`}>
+                {record.overallScoreWorkNotDone ? `${record.overallScoreWorkNotDone}%` : "—"}
+              </p>
+            </div>
+            <div>
+              <span className="text-gray-600 font-medium">Work Not Done On Time:</span>
+              <p className={`text-sm font-semibold mt-1 ${getScorePercentageColor(record.overallScoreWorkNotDoneOnTime)}`}>
+                {record.overallScoreWorkNotDoneOnTime ? `${record.overallScoreWorkNotDoneOnTime}%` : "—"}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    ))
+  ) : (
+    <div className="px-6 py-4 text-center text-gray-500">
+      {searchTerm
+        ? "No scoring records matching your search"
+        : "No scoring records found"}
+    </div>
+  )}
+</div>
+            </>
           )}
         </div>
 
