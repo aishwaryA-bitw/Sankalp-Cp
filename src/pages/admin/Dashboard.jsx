@@ -772,7 +772,7 @@ export default function AdminDashboard() {
       case "daily":
         return "bg-blue-500 hover:bg-blue-600 text-white";
       case "weekly":
-        return "bg-purple-500 hover:bg-purple-600 text-white";
+        return "bg-blue-500 hover:bg-blue-600 text-white";
       case "fortnightly":
         return "bg-indigo-500 hover:bg-indigo-600 text-white";
       case "monthly":
@@ -943,7 +943,7 @@ export default function AdminDashboard() {
     <AdminLayout>
       <div className="space-y-6">
         <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
-          <h1 className="text-2xl font-bold tracking-tight text-purple-500">
+          <h1 className="text-2xl font-bold tracking-tight text-blue-500">
             Admin Dashboard
           </h1>
           <div className="flex items-center gap-2">
@@ -953,7 +953,7 @@ export default function AdminDashboard() {
               onChange={(e) => {
                 setDashboardType(e.target.value);
               }}
-              className="w-[140px] rounded-md border border-purple-200 p-2 focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
+              className="w-[140px] rounded-md border border-blue-200 p-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
             >
               <option value="checklist">Checklist</option>
               <option value="delegation">Delegation</option>
@@ -1112,7 +1112,7 @@ export default function AdminDashboard() {
               <div className="flex-1 space-y-2">
                 <label
                   htmlFor="search"
-                  className="flex items-center text-purple-700"
+                  className="flex items-center text-blue-700"
                 >
                   <Filter className="h-4 w-4 mr-2" />
                   Search Tasks
@@ -1122,13 +1122,13 @@ export default function AdminDashboard() {
                   placeholder="Search by task title or ID"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full rounded-md border border-purple-200 p-2 focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
+                  className="w-full rounded-md border border-blue-200 p-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
                 />
               </div>
               <div className="space-y-2 md:w-[180px]">
                 <label
                   htmlFor="staff-filter"
-                  className="flex items-center text-purple-700"
+                  className="flex items-center text-blue-700"
                 >
                   <Filter className="h-4 w-4 mr-2" />
                   Filter by Staff
@@ -1137,7 +1137,7 @@ export default function AdminDashboard() {
                   id="staff-filter"
                   value={filterStaff}
                   onChange={(e) => setFilterStaff(e.target.value)}
-                  className="w-full rounded-md border border-purple-200 p-2 focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
+                  className="w-full rounded-md border border-blue-200 p-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
                 >
                   <option value="all">All Staff</option>
                   {departmentData.staffMembers.map((staff) => (
@@ -1263,13 +1263,13 @@ export default function AdminDashboard() {
 
         {/* Tabs */}
         <div className="space-y-4">
-          <div className="bg-purple-100 rounded-md p-1 flex space-x-1">
+          <div className="bg-blue-100 rounded-md p-1 flex space-x-1">
             <button
               onClick={() => setActiveTab("overview")}
               className={`flex-1 py-2 text-center rounded-md transition-colors ${
                 activeTab === "overview"
-                  ? "bg-purple-600 text-white"
-                  : "text-purple-700 hover:bg-purple-200"
+                  ? "bg-blue-600 text-white"
+                  : "text-blue-700 hover:bg-blue-200"
               }`}
             >
               Overview
@@ -1278,8 +1278,8 @@ export default function AdminDashboard() {
               onClick={() => setActiveTab("mis")}
               className={`flex-1 py-2 text-center rounded-md transition-colors ${
                 activeTab === "mis"
-                  ? "bg-purple-600 text-white"
-                  : "text-purple-700 hover:bg-purple-200"
+                  ? "bg-blue-600 text-white"
+                  : "text-blue-700 hover:bg-blue-200"
               }`}
             >
               MIS Report
@@ -1288,8 +1288,8 @@ export default function AdminDashboard() {
               onClick={() => setActiveTab("staff")}
               className={`flex-1 py-2 text-center rounded-md transition-colors ${
                 activeTab === "staff"
-                  ? "bg-purple-600 text-white"
-                  : "text-purple-700 hover:bg-purple-200"
+                  ? "bg-blue-600 text-white"
+                  : "text-blue-700 hover:bg-blue-200"
               }`}
             >
               Staff Performance
@@ -1299,12 +1299,12 @@ export default function AdminDashboard() {
           {activeTab === "overview" && (
             <div className="space-y-4">
               <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-                <div className="lg:col-span-4 rounded-lg border border-purple-200 shadow-md bg-white">
-                  <div className="bg-gradient-to-r from-purple-50 to-pink-50 border-b border-purple-100 p-4">
-                    <h3 className="text-purple-700 font-medium">
+                <div className="lg:col-span-4 rounded-lg border border-blue-200 shadow-md bg-white">
+                  <div className="bg-gradient-to-r from-blue-50 to-blue-50 border-b border-blue-100 p-4">
+                    <h3 className="text-blue-700 font-medium">
                       Tasks Overview
                     </h3>
-                    <p className="text-purple-600 text-sm">
+                    <p className="text-blue-600 text-sm">
                       Task completion rate over time
                     </p>
                   </div>
@@ -1312,10 +1312,10 @@ export default function AdminDashboard() {
                     <TasksOverviewChart />
                   </div>
                 </div>
-                <div className="lg:col-span-3 rounded-lg border border-purple-200 shadow-md bg-white">
-                  <div className="bg-gradient-to-r from-purple-50 to-pink-50 border-b border-purple-100 p-4">
-                    <h3 className="text-purple-700 font-medium">Task Status</h3>
-                    <p className="text-purple-600 text-sm">
+                <div className="lg:col-span-3 rounded-lg border border-blue-200 shadow-md bg-white">
+                  <div className="bg-gradient-to-r from-blue-50 to-blue-50 border-b border-blue-100 p-4">
+                    <h3 className="text-blue-700 font-medium">Task Status</h3>
+                    <p className="text-blue-600 text-sm">
                       Distribution of tasks by status
                     </p>
                   </div>
@@ -1324,12 +1324,12 @@ export default function AdminDashboard() {
                   </div>
                 </div>
               </div>
-              <div className="rounded-lg border border-purple-200 shadow-md bg-white">
-                <div className="bg-gradient-to-r from-purple-50 to-pink-50 border-b border-purple-100 p-4">
-                  <h3 className="text-purple-700 font-medium">
+              <div className="rounded-lg border border-blue-200 shadow-md bg-white">
+                <div className="bg-gradient-to-r from-blue-50 to-blue-50 border-b border-blue-100 p-4">
+                  <h3 className="text-blue-700 font-medium">
                     Staff Task Summary
                   </h3>
-                  <p className="text-purple-600 text-sm">
+                  <p className="text-blue-600 text-sm">
                     Overview of tasks assigned to each staff member
                   </p>
                 </div>
@@ -1342,10 +1342,10 @@ export default function AdminDashboard() {
 
           {/* UPDATED: Modified MIS Report section for delegation mode */}
           {activeTab === "mis" && (
-            <div className="rounded-lg border border-purple-200 shadow-md bg-white">
-              <div className="bg-gradient-to-r from-purple-50 to-pink-50 border-b border-purple-100 p-4">
-                <h3 className="text-purple-700 font-medium">MIS Report</h3>
-                <p className="text-purple-600 text-sm">
+            <div className="rounded-lg border border-blue-200 shadow-md bg-white">
+              <div className="bg-gradient-to-r from-blue-50 to-blue-50 border-b border-blue-100 p-4">
+                <h3 className="text-blue-700 font-medium">MIS Report</h3>
+                <p className="text-blue-600 text-sm">
                   {dashboardType === "delegation"
                     ? "Detailed delegation analytics - all tasks from sheet data"
                     : "Detailed task analytics and performance metrics - all tasks including future dates"}
@@ -1359,7 +1359,7 @@ export default function AdminDashboard() {
                       <div className="space-y-2 lg:col-span-1">
                         <label
                           htmlFor="start-date"
-                          className="flex items-center text-purple-700 text-sm font-medium"
+                          className="flex items-center text-blue-700 text-sm font-medium"
                         >
                           Start Date
                         </label>
@@ -1373,13 +1373,13 @@ export default function AdminDashboard() {
                               startDate: e.target.value,
                             }))
                           }
-                          className="w-full rounded-md border border-purple-200 p-2 focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
+                          className="w-full rounded-md border border-blue-200 p-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
                         />
                       </div>
                       <div className="space-y-2 lg:col-span-1">
                         <label
                           htmlFor="end-date"
-                          className="flex items-center text-purple-700 text-sm font-medium"
+                          className="flex items-center text-blue-700 text-sm font-medium"
                         >
                           End Date
                         </label>
@@ -1393,13 +1393,13 @@ export default function AdminDashboard() {
                               endDate: e.target.value,
                             }))
                           }
-                          className="w-full rounded-md border border-purple-200 p-2 focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
+                          className="w-full rounded-md border border-blue-200 p-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
                         />
                       </div>
                       <div className="space-y-2 lg:col-span-2 flex items-end">
                         <button
                           onClick={filterTasksByDateRange}
-                          className="w-full bg-purple-600 hover:bg-purple-700 text-white py-2 px-4 rounded transition-colors"
+                          className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded transition-colors"
                         >
                           Apply Filter
                         </button>
@@ -1410,10 +1410,10 @@ export default function AdminDashboard() {
                   {/* UPDATED: Overall stats with different displays for delegation vs checklist */}
                   <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                     <div className="space-y-2">
-                      <div className="text-sm font-medium text-purple-600">
+                      <div className="text-sm font-medium text-blue-600">
                         Total Tasks Assigned
                       </div>
-                      <div className="text-3xl font-bold text-purple-700">
+                      <div className="text-3xl font-bold text-blue-700">
                         {dashboardType === "delegation"
                           ? departmentData.totalTasks
                           : dateRange.filtered
@@ -1421,16 +1421,16 @@ export default function AdminDashboard() {
                           : departmentData.totalTasks}
                       </div>
                       {dashboardType === "delegation" ? (
-                        <p className="text-xs text-purple-600">
+                        <p className="text-xs text-blue-600">
                           All tasks from delegation sheet
                         </p>
                       ) : (
                         <>
-                          <p className="text-xs text-purple-600">
+                          <p className="text-xs text-blue-600">
                             All tasks including future dates
                           </p>
                           {dateRange.filtered && (
-                            <p className="text-xs text-purple-600">
+                            <p className="text-xs text-blue-600">
                               For period: {formatLocalDate(dateRange.startDate)}{" "}
                               - {formatLocalDate(dateRange.endDate)}
                             </p>
@@ -1439,34 +1439,34 @@ export default function AdminDashboard() {
                       )}
                     </div>
                     <div className="space-y-2">
-                      <div className="text-sm font-medium text-purple-600">
+                      <div className="text-sm font-medium text-blue-600">
                         Tasks Completed
                       </div>
-                      <div className="text-3xl font-bold text-purple-700">
+                      <div className="text-3xl font-bold text-blue-700">
                         {dashboardType === "delegation"
                           ? departmentData.completedTasks
                           : dateRange.filtered
                           ? filteredDateStats.completedTasks
                           : departmentData.completedTasks}
                       </div>
-                      <p className="text-xs text-purple-600">
+                      <p className="text-xs text-blue-600">
                         All completed tasks
                       </p>
                     </div>
                     <div className="space-y-2">
-                      <div className="text-sm font-medium text-purple-600">
+                      <div className="text-sm font-medium text-blue-600">
                         {dashboardType === "delegation"
                           ? "Tasks Pending"
                           : "Tasks Pending/Overdue"}
                       </div>
-                      <div className="text-3xl font-bold text-purple-700">
+                      <div className="text-3xl font-bold text-blue-700">
                         {dashboardType === "delegation"
                           ? departmentData.pendingTasks
                           : dateRange.filtered
                           ? `${filteredDateStats.pendingTasks} / ${filteredDateStats.overdueTasks}`
                           : `${departmentData.pendingTasks} / ${departmentData.overdueTasks}`}
                       </div>
-                      <div className="text-xs text-purple-600">
+                      <div className="text-xs text-blue-600">
                         {dashboardType === "delegation"
                           ? "All incomplete tasks"
                           : "Pending (all incomplete including future) / Overdue (past dates only)"}
@@ -1476,8 +1476,8 @@ export default function AdminDashboard() {
 
                   {/* UPDATED: Additional breakdown - only for checklist with date filtering */}
                   {dashboardType !== "delegation" && dateRange.filtered && (
-                    <div className="rounded-lg border border-purple-100 p-4 bg-gray-50">
-                      <h4 className="text-lg font-medium text-purple-700 mb-4">
+                    <div className="rounded-lg border border-blue-100 p-4 bg-gray-50">
+                      <h4 className="text-lg font-medium text-blue-700 mb-4">
                         Detailed Date Range Breakdown
                       </h4>
                       <div className="grid gap-4 md:grid-cols-3">
@@ -1521,8 +1521,8 @@ export default function AdminDashboard() {
 
                   {/* UPDATED: Special breakdown for delegation mode */}
                   {dashboardType === "delegation" && (
-                    <div className="rounded-lg border border-purple-100 p-4 bg-gray-50">
-                      <h4 className="text-lg font-medium text-purple-700 mb-4">
+                    <div className="rounded-lg border border-blue-100 p-4 bg-gray-50">
+                      <h4 className="text-lg font-medium text-blue-700 mb-4">
                         Delegation Completion Breakdown
                       </h4>
                       <div className="grid gap-4 md:grid-cols-3">
@@ -1564,16 +1564,16 @@ export default function AdminDashboard() {
                   )}
 
                   <div className="space-y-4">
-                    <h3 className="text-lg font-medium text-purple-700">
+                    <h3 className="text-lg font-medium text-blue-700">
                       Department Performance
                     </h3>
                     <div className="grid gap-4 md:grid-cols-1">
-                      <div className="rounded-lg border border-purple-200 bg-white p-4">
-                        <h4 className="text-sm font-medium text-purple-700 mb-2">
+                      <div className="rounded-lg border border-blue-200 bg-white p-4">
+                        <h4 className="text-sm font-medium text-blue-700 mb-2">
                           Completion Rate
                         </h4>
                         <div className="flex items-center gap-4">
-                          <div className="text-2xl font-bold text-purple-700">
+                          <div className="text-2xl font-bold text-blue-700">
                             {dashboardType === "delegation"
                               ? departmentData.completionRate
                               : dateRange.filtered
@@ -1618,7 +1618,7 @@ export default function AdminDashboard() {
                             </div>
                           </div>
                         </div>
-                        <p className="text-xs text-purple-600 mt-2">
+                        <p className="text-xs text-blue-600 mt-2">
                           {dashboardType === "delegation"
                             ? `${departmentData.completedTasks} of ${departmentData.totalTasks} tasks completed in delegation mode (all sheet data)`
                             : `${
@@ -1640,12 +1640,12 @@ export default function AdminDashboard() {
           )}
 
           {activeTab === "staff" && (
-            <div className="rounded-lg border border-purple-200 shadow-md bg-white">
-              <div className="bg-gradient-to-r from-purple-50 to-pink-50 border-b border-purple-100 p-4">
-                <h3 className="text-purple-700 font-medium">
+            <div className="rounded-lg border border-blue-200 shadow-md bg-white">
+              <div className="bg-gradient-to-r from-blue-50 to-blue-50 border-b border-blue-100 p-4">
+                <h3 className="text-blue-700 font-medium">
                   Staff Performance
                 </h3>
-                <p className="text-purple-600 text-sm">
+                <p className="text-blue-600 text-sm">
                   {dashboardType === "delegation"
                     ? "Task completion rates by staff member (all delegation sheet data)"
                     : "Task completion rates by staff member (all tasks including future dates)"}
@@ -1805,7 +1805,7 @@ export default function AdminDashboard() {
                                         className="flex items-center justify-between p-3 border border-red-100 rounded-md bg-red-50"
                                       >
                                         <div className="flex items-center gap-2">
-                                          <div className="h-10 w-10 rounded-full bg-gradient-to-r from-red-500 to-pink-500 flex items-center justify-center">
+                                          <div className="h-10 w-10 rounded-full bg-gradient-to-r from-red-500 to-blue-500 flex items-center justify-center">
                                             <span className="text-sm font-medium text-white">
                                               {staff.name.charAt(0)}
                                             </span>

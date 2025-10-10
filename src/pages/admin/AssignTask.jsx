@@ -61,8 +61,8 @@ const CalendarComponent = ({ date, onChange, onClose }) => {
           onClick={() => handleDateClick(day)}
           className={`h-8 w-8 rounded-full flex items-center justify-center text-sm ${
             isSelected
-              ? "bg-purple-600 text-white"
-              : "hover:bg-purple-100 text-gray-700"
+              ? "bg-blue-600 text-white"
+              : "hover:bg-blue-100 text-gray-700"
           }`}
         >
           {day}
@@ -152,7 +152,7 @@ const MultiSelectDropdown = ({
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full rounded-md border border-purple-200 p-2 focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500 text-left flex justify-between items-center"
+        className="w-full rounded-md border border-blue-200 p-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 text-left flex justify-between items-center"
       >
         <span className="truncate">
           {selectedValues.length === 0
@@ -169,17 +169,17 @@ const MultiSelectDropdown = ({
       </button>
 
       {isOpen && (
-        <div className="absolute z-10 w-full mt-1 bg-white border border-purple-200 rounded-md shadow-lg max-h-60 overflow-y-auto">
+        <div className="absolute z-10 w-full mt-1 bg-white border border-blue-200 rounded-md shadow-lg max-h-60 overflow-y-auto">
           {/* Select All Option */}
           <div
-            className="px-3 py-2 hover:bg-purple-50 cursor-pointer border-b border-gray-200 font-medium text-purple-700"
+            className="px-3 py-2 hover:bg-blue-50 cursor-pointer border-b border-gray-200 font-medium text-blue-700"
             onClick={handleSelectAll}
           >
             <div className="flex items-center">
               <div
-                className={`w-4 h-4 border border-purple-300 rounded flex items-center justify-center mr-2 ${
+                className={`w-4 h-4 border border-blue-300 rounded flex items-center justify-center mr-2 ${
                   selectedValues.length === options.length
-                    ? "bg-purple-600"
+                    ? "bg-blue-600"
                     : "bg-white"
                 }`}
               >
@@ -199,14 +199,14 @@ const MultiSelectDropdown = ({
           {options.map((option, index) => (
             <div
               key={index}
-              className="px-3 py-2 hover:bg-purple-50 cursor-pointer"
+              className="px-3 py-2 hover:bg-blue-50 cursor-pointer"
               onClick={() => handleToggle(option)}
             >
               <div className="flex items-center">
                 <div
-                  className={`w-4 h-4 border border-purple-300 rounded flex items-center justify-center mr-2 ${
+                  className={`w-4 h-4 border border-blue-300 rounded flex items-center justify-center mr-2 ${
                     selectedValues.includes(option)
-                      ? "bg-purple-600"
+                      ? "bg-blue-600"
                       : "bg-white"
                   }`}
                 >
@@ -934,19 +934,7 @@ export default function AssignTask() {
       const lastTaskId = await getLastTaskId(submitSheetName);
       let nextTaskId = lastTaskId + 1;
 
-      // Prepare all tasks data for batch insertion
-      // const tasksData = generatedTasks.map((task, index) => ({
-      //   timestamp: formatDateToDDMMYYYY(new Date()),
-      //   taskId: (nextTaskId + index).toString(),
-      //   firm: task.department, // Maps to Column C
-      //   givenBy: task.givenBy, // Maps to Column D
-      //   name: task.doer, // Maps to Column E
-      //   description: task.description, // Maps to Column F
-      //   startDate: task.dueDate, // Maps to Column G - now in DD/MM/YYYY format
-      //   freq: task.frequency, // Maps to Column H
-      //   enableReminders: task.enableReminders ? "Yes" : "No", // Maps to Column I
-      //   requireAttachment: task.requireAttachment ? "Yes" : "No", // Maps to Column J
-      // }));
+      
 
       // Prepare all tasks data for batch insertion
       const tasksData = generatedTasks.map((task, index) => ({
@@ -1013,16 +1001,16 @@ export default function AssignTask() {
   return (
     <AdminLayout>
       <div className="max-w-2xl mx-auto">
-        <h1 className="text-2xl font-bold tracking-tight mb-6 text-purple-500">
+        <h1 className="text-2xl font-bold tracking-tight mb-6 text-blue-500">
           Assign New Task
         </h1>
-        <div className="rounded-lg border border-purple-200 bg-white shadow-md overflow-hidden">
+        <div className="rounded-lg border border-blue-200 bg-white shadow-md overflow-hidden">
           <form onSubmit={handleSubmit}>
-            <div className="bg-gradient-to-r from-purple-50 to-pink-50 p-6 border-b border-purple-100">
-              <h2 className="text-xl font-semibold text-purple-700">
+            <div className="bg-gradient-to-r from-blue-50 to-blue-50 p-6 border-b border-blue-100">
+              <h2 className="text-xl font-semibold text-blue-700">
                 Task Details
               </h2>
-              <p className="text-purple-600">
+              <p className="text-blue-600">
                 Fill in the details to assign a new task to staff members.
               </p>
             </div>
@@ -1031,7 +1019,7 @@ export default function AssignTask() {
               <div className="space-y-2">
                 <label
                   htmlFor="department"
-                  className="block text-sm font-medium text-purple-700"
+                  className="block text-sm font-medium text-blue-700"
                 >
                   Department Name
                 </label>
@@ -1041,7 +1029,7 @@ export default function AssignTask() {
                   value={formData.department}
                   onChange={handleChange}
                   required
-                  className="w-full rounded-md border border-purple-200 p-2 focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
+                  className="w-full rounded-md border border-blue-200 p-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
                 >
                   <option value="">Select Department</option>
                   {departmentOptions.map((dept, index) => (
@@ -1052,36 +1040,13 @@ export default function AssignTask() {
                 </select>
               </div>
 
-              {/* Given By Dropdown */}
-              {/* <div className="space-y-2">
-                <label
-                  htmlFor="givenBy"
-                  className="block text-sm font-medium text-purple-700"
-                >
-                  Given By
-                </label>
-                <select
-                  id="givenBy"
-                  name="givenBy"
-                  value={formData.givenBy}
-                  onChange={handleChange}
-                  required
-                  className="w-full rounded-md border border-purple-200 p-2 focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
-                >
-                  <option value="">Select Given By</option>
-                  {givenByOptions.map((person, index) => (
-                    <option key={index} value={person}>
-                      {person}
-                    </option>
-                  ))}
-                </select>
-              </div> */}
+              
 
 
               <div className="space-y-2">
                 <label
                   htmlFor="givenBy"
-                  className="block text-sm font-medium text-purple-700"
+                  className="block text-sm font-medium text-blue-700"
                 >
                   Given By
                 </label>
@@ -1091,7 +1056,7 @@ export default function AssignTask() {
                   name="givenBy"
                   value={formData.givenBy}
                   readOnly
-                  className="w-full rounded-md border border-purple-200 p-2 bg-gray-50 text-gray-700 cursor-not-allowed"
+                  className="w-full rounded-md border border-blue-200 p-2 bg-gray-50 text-gray-700 cursor-not-allowed"
                 />
               </div>
 
@@ -1099,10 +1064,10 @@ export default function AssignTask() {
               <div className="space-y-2">
                 <label
                   htmlFor="doers"
-                  className="block text-sm font-medium text-purple-700"
+                  className="block text-sm font-medium text-blue-700"
                 >
                   Doer's Names{" "}
-                  <span className="text-sm text-purple-500">
+                  <span className="text-sm text-blue-500">
                     (Select multiple doers)
                   </span>
                 </label>
@@ -1117,7 +1082,7 @@ export default function AssignTask() {
                     {formData.doers.map((doer, index) => (
                       <span
                         key={index}
-                        className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-purple-100 text-purple-700"
+                        className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-blue-100 text-blue-700"
                       >
                         {doer}
                         <button
@@ -1127,7 +1092,7 @@ export default function AssignTask() {
                               formData.doers.filter((d) => d !== doer)
                             )
                           }
-                          className="ml-1 text-purple-500 hover:text-purple-700"
+                          className="ml-1 text-blue-500 hover:text-blue-700"
                         >
                           ×
                         </button>
@@ -1141,7 +1106,7 @@ export default function AssignTask() {
               <div className="space-y-2">
                 <label
                   htmlFor="description"
-                  className="block text-sm font-medium text-purple-700"
+                  className="block text-sm font-medium text-blue-700"
                 >
                   Task Description
                 </label>
@@ -1153,23 +1118,23 @@ export default function AssignTask() {
                   placeholder="Enter task description"
                   rows={4}
                   required
-                  className="w-full rounded-md border border-purple-200 p-2 focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
+                  className="w-full rounded-md border border-blue-200 p-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
                 />
               </div>
 
               {/* Date and Frequency */}
               <div className="grid gap-4 md:grid-cols-2">
                 <div className="space-y-2">
-                  <label className="block text-sm font-medium text-purple-700">
+                  <label className="block text-sm font-medium text-blue-700">
                     Task Start Date
                   </label>
                   <div className="relative">
                     <button
                       type="button"
                       onClick={() => setShowCalendar(!showCalendar)}
-                      className="w-full flex justify-start items-center rounded-md border border-purple-200 p-2 text-left focus:outline-none focus:ring-1 focus:ring-purple-500"
+                      className="w-full flex justify-start items-center rounded-md border border-blue-200 p-2 text-left focus:outline-none focus:ring-1 focus:ring-blue-500"
                     >
-                      <Calendar className="mr-2 h-4 w-4 text-purple-500" />
+                      <Calendar className="mr-2 h-4 w-4 text-blue-500" />
                       {date ? getFormattedDate(date) : "Select a date"}
                     </button>
                     {showCalendar && (
@@ -1187,7 +1152,7 @@ export default function AssignTask() {
                 <div className="space-y-2">
                   <label
                     htmlFor="frequency"
-                    className="block text-sm font-medium text-purple-700"
+                    className="block text-sm font-medium text-blue-700"
                   >
                     Frequency
                   </label>
@@ -1196,7 +1161,7 @@ export default function AssignTask() {
                     name="frequency"
                     value={formData.frequency}
                     onChange={handleChange}
-                    className="w-full rounded-md border border-purple-200 p-2 focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
+                    className="w-full rounded-md border border-blue-200 p-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
                   >
                     {frequencies.map((freq) => (
                       <option key={freq.value} value={freq.value}>
@@ -1210,7 +1175,7 @@ export default function AssignTask() {
               <div className="space-y-2">
                 <label
                   htmlFor="priority"
-                  className="block text-sm font-medium text-purple-700"
+                  className="block text-sm font-medium text-blue-700"
                 >
                   Priority
                 </label>
@@ -1219,7 +1184,7 @@ export default function AssignTask() {
                   name="priority"
                   value={formData.priority || "yes"} // default "yes"
                   onChange={handleChange}
-                  className="w-full rounded-md border border-purple-200 p-2 focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
+                  className="w-full rounded-md border border-blue-200 p-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
                 >
                   <option value="yes">Yes</option>
                   <option value="no">No</option>
@@ -1227,8 +1192,8 @@ export default function AssignTask() {
               </div>
 
               {/* Additional Options */}
-              <div className="space-y-4 pt-2 border-t border-purple-100">
-                <h3 className="text-lg font-medium text-purple-700 pt-2">
+              <div className="space-y-4 pt-2 border-t border-blue-100">
+                <h3 className="text-lg font-medium text-blue-700 pt-2">
                   Additional Options
                 </h3>
 
@@ -1236,16 +1201,16 @@ export default function AssignTask() {
                   <div className="space-y-0.5">
                     <label
                       htmlFor="enable-reminders"
-                      className="text-purple-700 font-medium"
+                      className="text-blue-700 font-medium"
                     >
                       Enable Reminders
                     </label>
-                    <p className="text-sm text-purple-600">
+                    <p className="text-sm text-blue-600">
                       Send reminders before task due date
                     </p>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <BellRing className="h-4 w-4 text-purple-500" />
+                    <BellRing className="h-4 w-4 text-blue-500" />
                     <label className="relative inline-flex items-center cursor-pointer">
                       <input
                         type="checkbox"
@@ -1256,7 +1221,7 @@ export default function AssignTask() {
                         }
                         className="sr-only peer"
                       />
-                      <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-purple-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
+                      <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
                     </label>
                   </div>
                 </div>
@@ -1265,16 +1230,16 @@ export default function AssignTask() {
                   <div className="space-y-0.5">
                     <label
                       htmlFor="require-attachment"
-                      className="text-purple-700 font-medium"
+                      className="text-blue-700 font-medium"
                     >
                       Require Attachment
                     </label>
-                    <p className="text-sm text-purple-600">
+                    <p className="text-sm text-blue-600">
                       User must upload a file when completing task
                     </p>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <FileCheck className="h-4 w-4 text-purple-500" />
+                    <FileCheck className="h-4 w-4 text-blue-500" />
                     <label className="relative inline-flex items-center cursor-pointer">
                       <input
                         type="checkbox"
@@ -1285,14 +1250,14 @@ export default function AssignTask() {
                         }
                         className="sr-only peer"
                       />
-                      <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-purple-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
+                      <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
                     </label>
                   </div>
                 </div>
               </div>
             </div>
 
-            <div className="flex justify-between bg-gradient-to-r from-purple-50 to-pink-50 p-6 border-t border-purple-100">
+            <div className="flex justify-between bg-gradient-to-r from-blue-50 to-blue-50 p-6 border-t border-blue-100">
               <button
                 type="button"
                 onClick={() => {
@@ -1307,14 +1272,14 @@ export default function AssignTask() {
                   });
                   setSelectedDate(null);
                 }}
-                className="rounded-md border border-purple-200 py-2 px-4 text-purple-700 hover:border-purple-300 hover:bg-purple-100 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
+                className="rounded-md border border-blue-200 py-2 px-4 text-blue-700 hover:border-blue-300 hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="rounded-md bg-gradient-to-r from-purple-600 to-pink-600 py-2 px-4 text-white hover:from-purple-700 hover:to-pink-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="rounded-md bg-gradient-to-r from-blue-600 to-blue-600 py-2 px-4 text-white hover:from-blue-700 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isSubmitting ? "Assigning..." : "Assign Tasks"}
               </button>

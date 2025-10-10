@@ -953,13 +953,13 @@ function DelegationDataPage() {
           <div className="px-4 py-4 sm:px-6 lg:px-8">
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
               {/* Title */}
-              <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-purple-700 text-center sm:text-left">
+              <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-blue-700 text-center sm:text-left">
                 {showHistory
                   ? CONFIG.PAGE_CONFIG.historyTitle
                   : CONFIG.PAGE_CONFIG.title}
               </h1>
 
-              <div className="p-4 border-b border-purple-100 bg-transparent">
+              <div className="p-4 border-b border-blue-100 bg-transparent">
                 <div className="flex flex-wrap items-center justify-between gap-4">
                   {/* Filters Row */}
                   <div className="flex flex-nowrap items-center gap-6">
@@ -967,7 +967,7 @@ function DelegationDataPage() {
                     <div className="flex flex-col sm:flex-row items-center gap-2">
                       <label
                         htmlFor="given-by-filter"
-                        className="text-sm font-medium text-purple-700"
+                        className="text-sm font-medium text-blue-700"
                       >
                         Given By
                       </label>
@@ -975,7 +975,7 @@ function DelegationDataPage() {
                         id="given-by-filter"
                         value={givenByFilter}
                         onChange={(e) => setGivenByFilter(e.target.value)}
-                        className="border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
+                        className="border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                       >
                         <option value="">All</option>
                         {uniqueGivenByValues.map((value) => (
@@ -990,7 +990,7 @@ function DelegationDataPage() {
                     <div className="flex flex-col sm:flex-row items-center gap-2">
                       <label
                         htmlFor="name-filter"
-                        className="text-sm font-medium text-purple-700"
+                        className="text-sm font-medium text-blue-700"
                       >
                         {showHistory ? "User" : "Name"}
                       </label>
@@ -998,7 +998,7 @@ function DelegationDataPage() {
                         id="name-filter"
                         value={nameFilter}
                         onChange={(e) => setNameFilter(e.target.value)}
-                        className="border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
+                        className="border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                       >
                         <option value="">All</option>
                         {uniqueNameValues.map((value) => (
@@ -1037,7 +1037,7 @@ function DelegationDataPage() {
                     }
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2 border border-purple-200 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    className="w-full pl-10 pr-4 py-2 border border-blue-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
 
@@ -1064,7 +1064,7 @@ function DelegationDataPage() {
                   <button
                     onClick={handleSubmit}
                     disabled={selectedItemsCount === 0 || isSubmitting}
-                    className="rounded-md bg-gradient-to-r from-purple-600 to-pink-600 py-2 px-4 text-white hover:from-purple-700 hover:to-pink-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed w-full sm:w-auto"
+                    className="rounded-md bg-gradient-to-r from-blue-600 to-pink-600 py-2 px-4 text-white hover:from-blue-700 hover:to-pink-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed w-full sm:w-auto"
                   >
                     {isSubmitting
                       ? "Processing..."
@@ -1093,18 +1093,18 @@ function DelegationDataPage() {
             </div>
           )}
 
-          <div className="rounded-lg border border-purple-200 shadow-md bg-white overflow-hidden">
-            <div className="bg-gradient-to-r from-purple-50 to-pink-50 border-b border-purple-100 p-4">
+          <div className="rounded-lg border border-blue-200 shadow-md bg-white overflow-hidden">
+            <div className="bg-gradient-to-r from-blue-50 to-pink-50 border-b border-blue-100 p-4">
               {/* row */}
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                 {/* Left side text */}
                 <div>
-                  <h2 className="text-purple-700 font-medium">
+                  <h2 className="text-blue-700 font-medium">
                     {showHistory
                       ? `Completed ${CONFIG.SOURCE_SHEET_NAME} Tasks`
                       : `Pending ${CONFIG.SOURCE_SHEET_NAME} Tasks`}
                   </h2>
-                  <p className="text-purple-600 text-sm">
+                  <p className="text-blue-600 text-sm">
                     {showHistory
                       ? `${CONFIG.PAGE_CONFIG.historyDescription} for ${
                           userRole === "admin" ? "all" : "your"
@@ -1127,8 +1127,8 @@ function DelegationDataPage() {
 
             {loading ? (
               <div className="text-center py-10">
-                <div className="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-purple-500 mb-4"></div>
-                <p className="text-purple-600">Loading task data...</p>
+                <div className="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500 mb-4"></div>
+                <p className="text-blue-600">Loading task data...</p>
               </div>
             ) : error ? (
               <div className="bg-red-50 p-4 rounded-md text-red-800 text-center">
@@ -1143,11 +1143,11 @@ function DelegationDataPage() {
             ) : showHistory ? (
               <>
                 {/* Simplified History Filters - Only Date Range */}
-                <div className="p-4 border-b border-purple-100 bg-gray-50">
+                <div className="p-4 border-b border-blue-100 bg-gray-50">
                   <div className="flex flex-wrap items-center justify-between gap-4">
                     <div className="flex flex-col">
                       <div className="mb-2 flex items-center">
-                        <span className="text-sm font-medium text-purple-700">
+                        <span className="text-sm font-medium text-blue-700">
                           Filter by Date Range:
                         </span>
                       </div>
@@ -1268,8 +1268,8 @@ function DelegationDataPage() {
                         </div>
 
                         {/* Remarks */}
-                        <div className="bg-purple-50 p-2 rounded">
-                          <span className="text-xs font-semibold text-purple-700">
+                        <div className="bg-blue-50 p-2 rounded">
+                          <span className="text-xs font-semibold text-blue-700">
                             Remarks:
                           </span>
                           <p className="text-sm text-gray-900 mt-1 break-words">
@@ -1414,7 +1414,7 @@ function DelegationDataPage() {
                                 {formatDateForDisplay(history["col3"]) || "—"}
                               </div>
                             </td>
-                            <td className="px-6 py-4 bg-purple-50 min-w-[200px]">
+                            <td className="px-6 py-4 bg-blue-50 min-w-[200px]">
                               <div
                                 className="text-sm text-gray-900 max-w-md whitespace-normal break-words"
                                 title={history["col4"]}
@@ -1480,18 +1480,18 @@ function DelegationDataPage() {
               <>
                 {/* Regular Tasks Table */}
                 <div className="hidden sm:flex overflow-x-auto">
-                  <div className="flex justify-between items-center mb-4 px-6 pt-4">
+                  {/* <div className="flex justify-between items-center mb-4 px-6 pt-4">
                     <h3 className="text-lg font-semibold text-gray-700">
                       Pending Tasks
                     </h3>
-                  </div>
+                  </div> */}
                   <table className="min-w-full divide-y divide-gray-200">
                     <thead className="bg-gray-50">
                       <tr>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                           <input
                             type="checkbox"
-                            className="h-4 w-4 rounded border-gray-300 text-purple-600 focus:ring-purple-500"
+                            className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                             checked={
                               filteredAccountData.length > 0 &&
                               selectedItems.size === filteredAccountData.length
@@ -1549,7 +1549,7 @@ function DelegationDataPage() {
                         </th>
                         <th
                           className={`px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider ${
-                            !accountData["col17"] ? "bg-purple-50" : ""
+                            !accountData["col17"] ? "bg-blue-50" : ""
                           }`}
                         >
                           Remarks
@@ -1578,13 +1578,13 @@ function DelegationDataPage() {
                             <tr
                               key={account._id}
                               className={`${
-                                isSelected ? "bg-purple-50" : ""
+                                isSelected ? "bg-blue-50" : ""
                               } hover:bg-gray-50 ${rowColorClass}`}
                             >
                               <td className="px-6 py-4 whitespace-nowrap">
                                 <input
                                   type="checkbox"
-                                  className="h-4 w-4 rounded border-gray-300 text-purple-600 focus:ring-purple-500"
+                                  className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                                   checked={isSelected}
                                   onChange={(e) =>
                                     handleCheckboxClick(e, account._id)
@@ -1765,7 +1765,7 @@ function DelegationDataPage() {
                               </td>
                               <td
                                 className={`px-6 py-4 whitespace-nowrap ${
-                                  !account["col17"] ? "bg-purple-50" : ""
+                                  !account["col17"] ? "bg-blue-50" : ""
                                 }`}
                               >
                                 <input
@@ -1811,7 +1811,7 @@ function DelegationDataPage() {
                                         </span>
                                       ) : (
                                         <button
-                                          className="text-xs text-purple-600 hover:text-purple-800"
+                                          className="text-xs text-blue-600 hover:text-blue-800"
                                           onClick={() =>
                                             window.open(account.image, "_blank")
                                           }
@@ -1826,8 +1826,8 @@ function DelegationDataPage() {
                                     className={`flex items-center cursor-pointer ${
                                       account["col9"]?.toUpperCase() === "YES"
                                         ? "text-red-600 font-medium"
-                                        : "text-purple-600"
-                                    } hover:text-purple-800`}
+                                        : "text-blue-600"
+                                    } hover:text-blue-800`}
                                   >
                                     <Upload className="h-4 w-4 mr-1" />
                                     <span className="text-xs">
@@ -1895,11 +1895,11 @@ function DelegationDataPage() {
                           className={`bg-white rounded-lg shadow-md border-2 mb-4 overflow-hidden ${rowColorClass}`}
                         >
                           {/* Header Section with Checkbox and Basic Info */}
-                          <div className="bg-gradient-to-r from-purple-50 to-pink-50 p-3 border-b border-purple-200">
+                          <div className="bg-gradient-to-r from-blue-50 to-pink-50 p-3 border-b border-blue-200">
                             <div className="flex items-start gap-3">
                               <input
                                 type="checkbox"
-                                className="h-5 w-5 mt-1 rounded border-gray-300 text-purple-600 focus:ring-purple-500"
+                                className="h-5 w-5 mt-1 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                                 checked={isSelected}
                                 onChange={(e) =>
                                   handleCheckboxClick(e, account._id)
@@ -1908,7 +1908,7 @@ function DelegationDataPage() {
                               <div className="flex-1">
                                 <div className="flex justify-between items-start mb-2">
                                   <div>
-                                    <span className="text-xs font-medium text-purple-600">
+                                    <span className="text-xs font-medium text-blue-600">
                                       Task ID:
                                     </span>
                                     <p className="text-sm font-bold text-gray-900">
@@ -1916,7 +1916,7 @@ function DelegationDataPage() {
                                     </p>
                                   </div>
                                   <div className="text-right">
-                                    <span className="text-xs font-medium text-purple-600">
+                                    <span className="text-xs font-medium text-blue-600">
                                       Priority:
                                     </span>
                                     <p className="text-sm font-semibold text-gray-900">
@@ -2054,7 +2054,7 @@ function DelegationDataPage() {
                                     e.target.value
                                   )
                                 }
-                                className="border border-gray-300 rounded-lg px-3 py-2 w-full text-sm disabled:bg-gray-100 disabled:cursor-not-allowed focus:ring-2 focus:ring-purple-500"
+                                className="border border-gray-300 rounded-lg px-3 py-2 w-full text-sm disabled:bg-gray-100 disabled:cursor-not-allowed focus:ring-2 focus:ring-blue-500"
                               >
                                 <option value="">Select Status</option>
                                 <option value="Done">Done</option>
@@ -2103,7 +2103,7 @@ function DelegationDataPage() {
                                     handleNextTargetDateChange(account._id, "");
                                   }
                                 }}
-                                className="border border-gray-300 rounded-lg px-3 py-2 w-full text-sm disabled:bg-gray-100 disabled:cursor-not-allowed focus:ring-2 focus:ring-purple-500"
+                                className="border border-gray-300 rounded-lg px-3 py-2 w-full text-sm disabled:bg-gray-100 disabled:cursor-not-allowed focus:ring-2 focus:ring-blue-500"
                               />
                             </div>
 
@@ -2122,7 +2122,7 @@ function DelegationDataPage() {
                                     [account._id]: e.target.value,
                                   }))
                                 }
-                                className="border border-gray-300 rounded-lg px-3 py-2 w-full text-sm disabled:bg-gray-100 disabled:cursor-not-allowed focus:ring-2 focus:ring-purple-500"
+                                className="border border-gray-300 rounded-lg px-3 py-2 w-full text-sm disabled:bg-gray-100 disabled:cursor-not-allowed focus:ring-2 focus:ring-blue-500"
                               />
                             </div>
 
@@ -2156,7 +2156,7 @@ function DelegationDataPage() {
                                       </span>
                                     ) : (
                                       <button
-                                        className="text-xs text-purple-600 hover:text-purple-800 font-medium text-left"
+                                        className="text-xs text-blue-600 hover:text-blue-800 font-medium text-left"
                                         onClick={() =>
                                           window.open(account.image, "_blank")
                                         }
@@ -2171,7 +2171,7 @@ function DelegationDataPage() {
                                   className={`flex items-center justify-center cursor-pointer border-2 border-dashed rounded-lg p-3 ${
                                     account["col9"]?.toUpperCase() === "YES"
                                       ? "border-red-300 bg-red-50 hover:bg-red-100"
-                                      : "border-purple-300 bg-purple-50 hover:bg-purple-100"
+                                      : "border-blue-300 bg-blue-50 hover:bg-blue-100"
                                   } transition-colors`}
                                 >
                                   <Upload className="h-5 w-5 mr-2" />
@@ -2179,7 +2179,7 @@ function DelegationDataPage() {
                                     className={`text-sm font-medium ${
                                       account["col9"]?.toUpperCase() === "YES"
                                         ? "text-red-600"
-                                        : "text-purple-600"
+                                        : "text-blue-600"
                                     }`}
                                   >
                                     {account["col9"]?.toUpperCase() === "YES"

@@ -229,7 +229,7 @@ function Score() {
       <div className="space-y-6">
         {/* Header */}
         <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
-          <h1 className="text-2xl font-bold tracking-tight text-purple-700">
+          <h1 className="text-2xl font-bold tracking-tight text-blue-700">
             {CONFIG.PAGE_CONFIG.title}
           </h1>
 
@@ -241,31 +241,31 @@ function Score() {
                 placeholder="Search by name, target, achievement..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 pr-4 py-2 border border-purple-200 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                className="pl-10 pr-4 py-2 border border-blue-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
           </div>
         </div>
 
         {/* Content */}
-        <div className="rounded-lg border border-purple-200 shadow-md bg-white overflow-hidden">
-          <div className="bg-gradient-to-r from-purple-50 to-pink-50 border-b border-purple-100 p-4">
+        <div className="rounded-lg border border-blue-200 shadow-md bg-white overflow-hidden">
+          <div className="bg-gradient-to-r from-blue-50 to-pink-50 border-b border-blue-100 p-4">
             <div className="flex items-center">
-              <Award className="h-5 w-5 mr-2 text-purple-600" />
-              <h2 className="text-purple-700 font-medium">Employee Scoring Records</h2>
+              <Award className="h-5 w-5 mr-2 text-blue-600" />
+              <h2 className="text-blue-700 font-medium">Employee Scoring Records</h2>
             </div>
-            <p className="text-purple-600 text-sm mt-1">
+            <p className="text-blue-600 text-sm mt-1">
               {CONFIG.PAGE_CONFIG.description}
             </p>
-            <div className="mt-2 text-sm text-purple-600">
+            <div className="mt-2 text-sm text-blue-600">
               Total Records: <span className="font-semibold">{filteredScoringData.length}</span>
             </div>
           </div>
 
           {loading ? (
             <div className="text-center py-10">
-              <div className="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-purple-500 mb-4"></div>
-              <p className="text-purple-600">Loading scoring data...</p>
+              <div className="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500 mb-4"></div>
+              <p className="text-blue-600">Loading scoring data...</p>
             </div>
           ) : error ? (
             <div className="bg-red-50 p-4 rounded-md text-red-800 text-center">
@@ -366,16 +366,16 @@ function Score() {
         className="bg-white rounded-lg shadow-md border-2 mb-4 overflow-hidden"
       >
         {/* Header Section */}
-        <div className="bg-gradient-to-r from-purple-50 to-pink-50 p-3 border-b border-purple-200">
+        <div className="bg-gradient-to-r from-blue-50 to-pink-50 p-3 border-b border-blue-200">
           <div className="flex justify-between items-start mb-2">
             <div>
-              <span className="text-xs font-medium text-purple-600">Name:</span>
+              <span className="text-xs font-medium text-blue-600">Name:</span>
               <p className="text-sm font-bold text-gray-900">
                 {record.name || "—"}
               </p>
             </div>
             <div className="text-right">
-              <span className="text-xs font-medium text-purple-600">Total Pending:</span>
+              <span className="text-xs font-medium text-blue-600">Total Pending:</span>
               <p className="text-sm font-semibold text-gray-900">
                 {record.totalPending || "—"}
               </p>

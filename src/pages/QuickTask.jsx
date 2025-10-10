@@ -438,7 +438,7 @@ function QuickTask() {
         <div className="sticky top-0 z-10 bg-white border-b border-gray-200 shadow-sm">
           <div className="px-4 py-4 sm:px-6 lg:px-8">
             <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
-              <h1 className="text-2xl font-bold tracking-tight text-purple-700">
+              <h1 className="text-2xl font-bold tracking-tight text-blue-700">
                 {CONFIG.PAGE_CONFIG.title}
               </h1>
 
@@ -467,7 +467,7 @@ function QuickTask() {
                         }
                         dateFormat="dd/MM/yyyy"
                         placeholderText="DD/MM/YYYY"
-                        className="pl-10 pr-4 py-2 border border-purple-200 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 w-32 text-sm"
+                        className="pl-10 pr-4 py-2 border border-blue-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 w-32 text-sm"
                       />
                     </div>
 
@@ -490,14 +490,14 @@ function QuickTask() {
                         }
                         dateFormat="dd/MM/yyyy"
                         placeholderText="DD/MM/YYYY"
-                        className="pl-10 pr-4 py-2 border border-purple-200 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 w-32 text-sm"
+                        className="pl-10 pr-4 py-2 border border-blue-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 w-32 text-sm"
                       />
                     </div>
 
                     {(startDate || endDate) && (
                       <button
                         onClick={clearDateFilters}
-                        className="text-purple-600 hover:text-purple-800 text-sm underline"
+                        className="text-blue-600 hover:text-blue-800 text-sm underline"
                       >
                         Clear
                       </button>
@@ -516,7 +516,7 @@ function QuickTask() {
                     placeholder="Search tasks..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10 pr-4 py-2 border border-purple-200 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 w-64"
+                    className="pl-10 pr-4 py-2 border border-blue-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 w-64"
                   />
                 </div>
               </div>
@@ -524,7 +524,7 @@ function QuickTask() {
 
             {/* Filter Status Display */}
             {(startDate || endDate || debouncedSearchTerm) && (
-              <div className="mt-3 text-sm text-purple-600">
+              <div className="mt-3 text-sm text-blue-600">
                 Showing {filteredAccountData.length} task
                 {filteredAccountData.length !== 1 ? "s" : ""}
                 {startDate && ` from ${startDate}`}
@@ -552,20 +552,20 @@ function QuickTask() {
             </div>
           )}
 
-          <div className="rounded-lg border border-purple-200 shadow-md bg-white overflow-hidden">
-            <div className="bg-gradient-to-r from-purple-50 to-pink-50 border-b border-purple-100 p-4">
-              <h2 className="text-purple-700 font-medium">
+          <div className="rounded-lg border border-blue-200 shadow-md bg-white overflow-hidden">
+            <div className="bg-gradient-to-r from-blue-50 to-pink-50 border-b border-blue-100 p-4">
+              <h2 className="text-blue-700 font-medium">
                 Pending {CONFIG.SHEET_NAME} Tasks
               </h2>
-              <p className="text-purple-600 text-sm">
+              <p className="text-blue-600 text-sm">
                 {CONFIG.PAGE_CONFIG.description}
               </p>
             </div>
 
             {loading ? (
               <div className="text-center py-10">
-                <div className="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-purple-500 mb-4"></div>
-                <p className="text-purple-600">Loading task data...</p>
+                <div className="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500 mb-4"></div>
+                <p className="text-blue-600">Loading task data...</p>
               </div>
             ) : error ? (
               <div className="bg-red-50 p-4 rounded-md text-red-800 text-center">
@@ -578,249 +578,259 @@ function QuickTask() {
                 </button>
               </div>
             ) : (
-
               <>
-              {/* Regular Tasks Table */}
-              <div className="hidden sm:flex overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-200">
-                  <thead className="bg-gray-50">
-                    <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        <input
-                          type="checkbox"
-                          className="h-4 w-4 rounded border-gray-300 text-purple-600 focus:ring-purple-500"
-                          checked={
-                            filteredAccountData.length > 0 &&
-                            selectedItems.size === filteredAccountData.length
-                          }
-                          onChange={handleSelectAllItems}
-                        />
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Date
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Project
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Given By
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Name
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Task Description
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Task Start Date
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Freq
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Enable Reminders
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Require Attachment
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody className="bg-white divide-y divide-gray-200">
-                    {filteredAccountData.length > 0 ? (
-                      filteredAccountData.map((account) => {
-                        const isSelected = selectedItems.has(account._id);
-                        return (
-                          <tr
-                            key={account._id}
-                            className={`${
-                              isSelected ? "bg-purple-50" : ""
-                            } hover:bg-gray-50`}
+                {/* Regular Tasks Table */}
+                <div className="hidden sm:flex overflow-x-auto">
+                  <table className="min-w-full divide-y divide-gray-200">
+                    <thead className="bg-gray-50">
+                      <tr>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          <input
+                            type="checkbox"
+                            className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                            checked={
+                              filteredAccountData.length > 0 &&
+                              selectedItems.size === filteredAccountData.length
+                            }
+                            onChange={handleSelectAllItems}
+                          />
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Date
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Project
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Given By
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Name
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Task Description
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Task Start Date
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Freq
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Enable Reminders
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Require Attachment
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody className="bg-white divide-y divide-gray-200">
+                      {filteredAccountData.length > 0 ? (
+                        filteredAccountData.map((account) => {
+                          const isSelected = selectedItems.has(account._id);
+                          return (
+                            <tr
+                              key={account._id}
+                              className={`${
+                                isSelected ? "bg-blue-50" : ""
+                              } hover:bg-gray-50`}
+                            >
+                              <td className="px-6 py-4 whitespace-nowrap">
+                                <input
+                                  type="checkbox"
+                                  className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                                  checked={isSelected}
+                                  onChange={(e) =>
+                                    handleCheckboxClick(e, account._id)
+                                  }
+                                />
+                              </td>
+                              <td className="px-6 py-4 whitespace-nowrap">
+                                <div className="text-sm text-gray-900">
+                                  {formatDateForDisplay(account["col0"])}
+                                </div>
+                              </td>
+                              <td className="px-6 py-4 whitespace-nowrap">
+                                <div className="text-sm text-gray-900">
+                                  {account["col1"] || "—"}
+                                </div>
+                              </td>
+                              <td className="px-6 py-4 whitespace-nowrap">
+                                <div className="text-sm text-gray-900">
+                                  {account["col2"] || "—"}
+                                </div>
+                              </td>
+                              <td className="px-6 py-4 whitespace-nowrap">
+                                <div className="text-sm text-gray-900">
+                                  {account["col3"] || "—"}
+                                </div>
+                              </td>
+                              <td className="px-6 py-4 min-w-[250px]">
+                                <div
+                                  className="text-sm text-gray-900 max-w-md whitespace-normal break-words"
+                                  title={account["col4"]}
+                                >
+                                  {account["col4"] || "—"}
+                                </div>
+                              </td>
+                              <td className="px-6 py-4 whitespace-nowrap">
+                                <div className="text-sm text-gray-900">
+                                  {formatDateForDisplay(account["col5"])}
+                                </div>
+                              </td>
+                              <td className="px-6 py-4 whitespace-nowrap">
+                                <div className="text-sm text-gray-900">
+                                  {account["col6"] || "—"}
+                                </div>
+                              </td>
+                              <td className="px-6 py-4 whitespace-nowrap">
+                                <div className="text-sm text-gray-900">
+                                  {account["col7"] || "—"}
+                                </div>
+                              </td>
+                              <td className="px-6 py-4 whitespace-nowrap">
+                                <div className="text-sm text-gray-900">
+                                  {account["col8"] || "—"}
+                                </div>
+                              </td>
+                            </tr>
+                          );
+                        })
+                      ) : (
+                        <tr>
+                          <td
+                            colSpan={10}
+                            className="px-6 py-4 text-center text-gray-500"
                           >
-                            <td className="px-6 py-4 whitespace-nowrap">
+                            {searchTerm || startDate || endDate
+                              ? "No tasks matching your filters"
+                              : "No pending tasks found"}
+                          </td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+
+                <div className="sm:hidden overflow-x-auto">
+                  {filteredAccountData.length > 0 ? (
+                    filteredAccountData.map((account) => {
+                      const isSelected = selectedItems.has(account._id);
+                      return (
+                        <div
+                          key={account._id}
+                          className="bg-white rounded-lg shadow-md border-2 mb-4 overflow-hidden"
+                        >
+                          {/* Header Section */}
+                          <div className="bg-gradient-to-r from-blue-50 to-pink-50 p-3 border-b border-blue-200">
+                            <div className="flex items-start gap-3">
                               <input
                                 type="checkbox"
-                                className="h-4 w-4 rounded border-gray-300 text-purple-600 focus:ring-purple-500"
+                                className="h-5 w-5 mt-1 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                                 checked={isSelected}
                                 onChange={(e) =>
                                   handleCheckboxClick(e, account._id)
                                 }
                               />
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap">
-                              <div className="text-sm text-gray-900">
-                                {formatDateForDisplay(account["col0"])}
-                              </div>
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap">
-                              <div className="text-sm text-gray-900">
-                                {account["col1"] || "—"}
-                              </div>
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap">
-                              <div className="text-sm text-gray-900">
-                                {account["col2"] || "—"}
-                              </div>
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap">
-                              <div className="text-sm text-gray-900">
-                                {account["col3"] || "—"}
-                              </div>
-                            </td>
-                            <td className="px-6 py-4 min-w-[250px]">
-                              <div
-                                className="text-sm text-gray-900 max-w-md whitespace-normal break-words"
-                                title={account["col4"]}
-                              >
-                                {account["col4"] || "—"}
-                              </div>
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap">
-                              <div className="text-sm text-gray-900">
-                                {formatDateForDisplay(account["col5"])}
-                              </div>
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap">
-                              <div className="text-sm text-gray-900">
-                                {account["col6"] || "—"}
-                              </div>
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap">
-                              <div className="text-sm text-gray-900">
-                                {account["col7"] || "—"}
-                              </div>
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap">
-                              <div className="text-sm text-gray-900">
-                                {account["col8"] || "—"}
-                              </div>
-                            </td>
-                          </tr>
-                        );
-                      })
-                    ) : (
-                      <tr>
-                        <td
-                          colSpan={10}
-                          className="px-6 py-4 text-center text-gray-500"
-                        >
-                          {searchTerm || startDate || endDate
-                            ? "No tasks matching your filters"
-                            : "No pending tasks found"}
-                        </td>
-                      </tr>
-                    )}
-                  </tbody>
-                </table>
-              </div>
+                              <div className="flex-1">
+                                <div className="flex justify-between items-start mb-2">
+                                  <div>
+                                    <span className="text-xs font-medium text-blue-600">
+                                      Date:
+                                    </span>
+                                    <p className="text-sm font-bold text-gray-900">
+                                      {formatDateForDisplay(account["col0"])}
+                                    </p>
+                                  </div>
+                                  <div className="text-right">
+                                    <span className="text-xs font-medium text-blue-600">
+                                      Project:
+                                    </span>
+                                    <p className="text-sm font-semibold text-gray-900">
+                                      {account["col1"] || "—"}
+                                    </p>
+                                  </div>
+                                </div>
 
+                                <div className="grid grid-cols-2 gap-2 text-xs">
+                                  <div>
+                                    <span className="text-gray-500">
+                                      Given By:
+                                    </span>
+                                    <p className="font-medium text-gray-900">
+                                      {account["col2"] || "—"}
+                                    </p>
+                                  </div>
+                                  <div>
+                                    <span className="text-gray-500">Name:</span>
+                                    <p className="font-medium text-gray-900">
+                                      {account["col3"] || "—"}
+                                    </p>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
 
+                          {/* Task Description Section */}
+                          <div className="p-3 bg-blue-50 border-b border-blue-100">
+                            <span className="text-xs font-semibold text-blue-700 uppercase">
+                              Task Description
+                            </span>
+                            <p className="text-sm text-gray-900 mt-1 whitespace-pre-wrap break-words leading-relaxed">
+                              {account["col4"] || "—"}
+                            </p>
+                          </div>
 
-
-
-                    <div className="sm:hidden overflow-x-auto">
-  {filteredAccountData.length > 0 ? (
-    filteredAccountData.map((account) => {
-      const isSelected = selectedItems.has(account._id);
-      return (
-        <div
-          key={account._id}
-          className="bg-white rounded-lg shadow-md border-2 mb-4 overflow-hidden"
-        >
-          {/* Header Section */}
-          <div className="bg-gradient-to-r from-purple-50 to-pink-50 p-3 border-b border-purple-200">
-            <div className="flex items-start gap-3">
-              <input
-                type="checkbox"
-                className="h-5 w-5 mt-1 rounded border-gray-300 text-purple-600 focus:ring-purple-500"
-                checked={isSelected}
-                onChange={(e) => handleCheckboxClick(e, account._id)}
-              />
-              <div className="flex-1">
-                <div className="flex justify-between items-start mb-2">
-                  <div>
-                    <span className="text-xs font-medium text-purple-600">Date:</span>
-                    <p className="text-sm font-bold text-gray-900">
-                      {formatDateForDisplay(account["col0"])}
-                    </p>
-                  </div>
-                  <div className="text-right">
-                    <span className="text-xs font-medium text-purple-600">Project:</span>
-                    <p className="text-sm font-semibold text-gray-900">
-                      {account["col1"] || "—"}
-                    </p>
-                  </div>
+                          {/* Details Section */}
+                          <div className="p-3 bg-yellow-50 border-b border-yellow-100">
+                            <div className="grid grid-cols-2 gap-3 text-xs">
+                              <div>
+                                <span className="text-gray-600 font-medium">
+                                  Task Start Date:
+                                </span>
+                                <p className="text-sm font-semibold text-gray-900 mt-1">
+                                  {formatDateForDisplay(account["col5"])}
+                                </p>
+                              </div>
+                              <div>
+                                <span className="text-gray-600 font-medium">
+                                  Frequency:
+                                </span>
+                                <p className="text-sm font-semibold text-gray-900 mt-1">
+                                  {account["col6"] || "—"}
+                                </p>
+                              </div>
+                              <div>
+                                <span className="text-gray-600 font-medium">
+                                  Enable Reminders:
+                                </span>
+                                <p className="text-sm font-semibold text-gray-900 mt-1">
+                                  {account["col7"] || "—"}
+                                </p>
+                              </div>
+                              <div>
+                                <span className="text-gray-600 font-medium">
+                                  Require Attachment:
+                                </span>
+                                <p className="text-sm font-semibold text-gray-900 mt-1">
+                                  {account["col8"] || "—"}
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })
+                  ) : (
+                    <div className="px-6 py-4 text-center text-gray-500">
+                      {searchTerm || startDate || endDate
+                        ? "No tasks matching your filters"
+                        : "No pending tasks found"}
+                    </div>
+                  )}
                 </div>
-
-                <div className="grid grid-cols-2 gap-2 text-xs">
-                  <div>
-                    <span className="text-gray-500">Given By:</span>
-                    <p className="font-medium text-gray-900">{account["col2"] || "—"}</p>
-                  </div>
-                  <div>
-                    <span className="text-gray-500">Name:</span>
-                    <p className="font-medium text-gray-900">{account["col3"] || "—"}</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Task Description Section */}
-          <div className="p-3 bg-blue-50 border-b border-blue-100">
-            <span className="text-xs font-semibold text-blue-700 uppercase">
-              Task Description
-            </span>
-            <p className="text-sm text-gray-900 mt-1 whitespace-pre-wrap break-words leading-relaxed">
-              {account["col4"] || "—"}
-            </p>
-          </div>
-
-          {/* Details Section */}
-          <div className="p-3 bg-yellow-50 border-b border-yellow-100">
-            <div className="grid grid-cols-2 gap-3 text-xs">
-              <div>
-                <span className="text-gray-600 font-medium">Task Start Date:</span>
-                <p className="text-sm font-semibold text-gray-900 mt-1">
-                  {formatDateForDisplay(account["col5"])}
-                </p>
-              </div>
-              <div>
-                <span className="text-gray-600 font-medium">Frequency:</span>
-                <p className="text-sm font-semibold text-gray-900 mt-1">
-                  {account["col6"] || "—"}
-                </p>
-              </div>
-              <div>
-                <span className="text-gray-600 font-medium">Enable Reminders:</span>
-                <p className="text-sm font-semibold text-gray-900 mt-1">
-                  {account["col7"] || "—"}
-                </p>
-              </div>
-              <div>
-                <span className="text-gray-600 font-medium">Require Attachment:</span>
-                <p className="text-sm font-semibold text-gray-900 mt-1">
-                  {account["col8"] || "—"}
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      );
-    })
-  ) : (
-    <div className="px-6 py-4 text-center text-gray-500">
-      {searchTerm || startDate || endDate
-        ? "No tasks matching your filters"
-        : "No pending tasks found"}
-    </div>
-  )}
-</div>
               </>
-
-
-
-
-
             )}
           </div>
         </div>

@@ -1046,7 +1046,7 @@ function AccountDataPage() {
           <div className="px-4 py-4 sm:px-6 lg:px-8">
             {/* mobile-first layout */}
             <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
-              <h1 className="text-2xl font-bold tracking-tight text-purple-700">
+              <h1 className="text-2xl font-bold tracking-tight text-blue-700">
                 {showHistory
                   ? CONFIG.PAGE_CONFIG.historyTitle
                   : CONFIG.PAGE_CONFIG.title}
@@ -1057,7 +1057,7 @@ function AccountDataPage() {
                 <div className="flex flex-row items-center gap-2">
                   <label
                     htmlFor="given-by-filter"
-                    className="text-sm font-medium text-purple-700"
+                    className="text-sm font-medium text-blue-700"
                   >
                     Given By
                   </label>
@@ -1099,7 +1099,7 @@ function AccountDataPage() {
                     }
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10 pr-4 py-2 border border-purple-200 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 w-full"
+                    className="pl-10 pr-4 py-2 border border-blue-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
                   />
                 </div>
 
@@ -1126,7 +1126,7 @@ function AccountDataPage() {
                   <button
                     onClick={handleSubmit}
                     disabled={selectedItemsCount === 0 || isSubmitting}
-                    className="rounded-md bg-gradient-to-r from-purple-600 to-pink-600 py-2 px-4 text-white hover:from-purple-700 hover:to-pink-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed w-full sm:w-auto"
+                    className="rounded-md bg-gradient-to-r from-blue-600 to-pink-600 py-2 px-4 text-white hover:from-blue-700 hover:to-pink-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed w-full sm:w-auto"
                   >
                     {isSubmitting
                       ? "Processing..."
@@ -1155,14 +1155,14 @@ function AccountDataPage() {
             </div>
           )}
 
-          <div className="rounded-lg border border-purple-200 shadow-md bg-white overflow-hidden">
-            <div className="bg-gradient-to-r from-purple-50 to-pink-50 border-b border-purple-100 p-4">
-              <h2 className="text-purple-700 font-medium">
+          <div className="rounded-lg border border-blue-200 shadow-md bg-white overflow-hidden">
+            <div className="bg-gradient-to-r from-blue-50 to-pink-50 border-b border-blue-100 p-4">
+              <h2 className="text-blue-700 font-medium">
                 {showHistory
                   ? `Completed ${CONFIG.SHEET_NAME} Tasks`
                   : `Pending ${CONFIG.SHEET_NAME} Tasks`}
               </h2>
-              <p className="text-purple-600 text-sm">
+              <p className="text-blue-600 text-sm">
                 {showHistory
                   ? `${CONFIG.PAGE_CONFIG.historyDescription} for ${
                       userRole === "admin" ? "all" : "your"
@@ -1173,8 +1173,8 @@ function AccountDataPage() {
 
             {loading ? (
               <div className="text-center py-10">
-                <div className="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-purple-500 mb-4"></div>
-                <p className="text-purple-600">Loading task data...</p>
+                <div className="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500 mb-4"></div>
+                <p className="text-blue-600">Loading task data...</p>
               </div>
             ) : error ? (
               <div className="bg-red-50 p-4 rounded-md text-red-800 text-center">
@@ -1189,12 +1189,12 @@ function AccountDataPage() {
             ) : showHistory ? (
               <>
                 {/* History Filters */}
-                <div className="p-4 border-b border-purple-100 bg-gray-50">
+                <div className="p-4 border-b border-blue-100 bg-gray-50">
                   <div className="flex flex-wrap items-center justify-between gap-4">
                     {getFilteredMembersList().length > 0 && (
                       <div className="flex flex-col">
                         <div className="mb-2 flex items-center">
-                          <span className="text-sm font-medium text-purple-700">
+                          <span className="text-sm font-medium text-blue-700">
                             Filter by Member:
                           </span>
                         </div>
@@ -1204,7 +1204,7 @@ function AccountDataPage() {
                               <input
                                 id={`member-${idx}`}
                                 type="checkbox"
-                                className="h-4 w-4 rounded border-gray-300 text-purple-600 focus:ring-purple-500"
+                                className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                                 checked={selectedMembers.includes(member)}
                                 onChange={() => handleMemberSelection(member)}
                               />
@@ -1222,7 +1222,7 @@ function AccountDataPage() {
 
                     <div className="flex flex-col">
                       <div className="mb-2 flex items-center">
-                        <span className="text-sm font-medium text-purple-700">
+                        <span className="text-sm font-medium text-blue-700">
                           Filter by Date Range:
                         </span>
                       </div>
@@ -1263,7 +1263,7 @@ function AccountDataPage() {
                 </div>
 
                 {/* Task Statistics */}
-                <div className="p-4 border-b border-purple-100 bg-blue-50">
+                <div className="p-4 border-b border-blue-100 bg-blue-50">
                   <div className="flex flex-col">
                     <h3 className="text-sm font-medium text-blue-700 mb-2">
                       Task Completion Statistics:
@@ -1326,7 +1326,7 @@ function AccountDataPage() {
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-orange-50">
                           Next Target Date
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-purple-50">
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-blue-50">
                           Remarks
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -1381,7 +1381,7 @@ function AccountDataPage() {
                                 {history["col3"] || "—"}
                               </div>
                             </td>
-                            <td className="px-6 py-4 bg-purple-50">
+                            <td className="px-6 py-4 bg-blue-50">
                               <div
                                 className="text-sm text-gray-900 max-w-xs"
                                 title={history["col4"]}
@@ -1524,8 +1524,8 @@ function AccountDataPage() {
         </div>
 
         {/* Remarks Section */}
-        <div className="bg-purple-50 p-2 rounded">
-          <span className="text-xs font-semibold text-purple-700">Remarks:</span>
+        <div className="bg-blue-50 p-2 rounded">
+          <span className="text-xs font-semibold text-blue-700">Remarks:</span>
           <p className="text-sm text-gray-900 mt-1 break-words">
             {history["col4"] || "—"}
           </p>
@@ -1592,12 +1592,12 @@ function AccountDataPage() {
             ) : (
               <>
                 {/* NEW: Pending Task Filters */}
-                <div className="p-4 border-b border-purple-100 bg-gray-50">
+                <div className="p-4 border-b border-blue-100 bg-gray-50">
                   <div className="flex flex-wrap items-center justify-between gap-4">
                     {getPendingMembersList.length > 0 && (
                       <div className="flex flex-col">
                         <div className="mb-2 flex items-center">
-                          <span className="text-sm font-medium text-purple-700">
+                          <span className="text-sm font-medium text-blue-700">
                             Filter by Name:
                           </span>
                         </div>
@@ -1606,7 +1606,7 @@ function AccountDataPage() {
                           onChange={(e) =>
                             setSelectedPendingMember(e.target.value)
                           }
-                          className="border border-gray-300 rounded-md px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-purple-500"
+                          className="border border-gray-300 rounded-md px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                         >
                           <option value="">All Members</option>
                           {getPendingMembersList.map((member, idx) => (
@@ -1620,7 +1620,7 @@ function AccountDataPage() {
 
                     <div className="flex flex-col">
                       <div className="mb-2 flex items-center">
-                        <span className="text-sm font-medium text-purple-700">
+                        <span className="text-sm font-medium text-blue-700">
                           Filter by Task Start Date:
                         </span>
                       </div>
@@ -1672,7 +1672,7 @@ function AccountDataPage() {
                 </div>
 
                 {/* NEW: Pending Task Statistics */}
-                <div className="p-4 border-b border-purple-100 bg-blue-50">
+                <div className="p-4 border-b border-blue-100 bg-blue-50">
                   <div className="flex flex-col">
                     <h3 className="text-sm font-medium text-blue-700 mb-2">
                       Pending Task Statistics:
@@ -1712,7 +1712,7 @@ function AccountDataPage() {
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                           <input
                             type="checkbox"
-                            className="h-4 w-4 rounded border-gray-300 text-purple-600 focus:ring-purple-500"
+                            className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                             checked={
                               filteredAccountData.length > 0 &&
                               selectedItems.size === filteredAccountData.length
@@ -1757,7 +1757,7 @@ function AccountDataPage() {
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-indigo-50">
                           Next Target Date
                         </th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-purple-50">
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-blue-50">
                           Remarks
                         </th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-orange-50">
@@ -1776,13 +1776,13 @@ function AccountDataPage() {
                             <tr
                               key={account._id}
                               className={`${
-                                isSelected ? "bg-purple-50" : ""
+                                isSelected ? "bg-blue-50" : ""
                               } hover:bg-gray-50`}
                             >
                               <td className="px-6 py-4 whitespace-nowrap">
                                 <input
                                   type="checkbox"
-                                  className="h-4 w-4 rounded border-gray-300 text-purple-600 focus:ring-purple-500"
+                                  className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                                   checked={isSelected}
                                   onChange={(e) =>
                                     handleCheckboxClick(e, account._id)
@@ -1954,7 +1954,7 @@ function AccountDataPage() {
                                   className="border border-gray-300 rounded-md px-2 py-1 w-full disabled:bg-gray-100 disabled:cursor-not-allowed"
                                 />
                               </td>
-                              <td className="px-6 py-4 whitespace-nowrap bg-purple-50">
+                              <td className="px-6 py-4 whitespace-nowrap bg-blue-50">
                                 <input
                                   type="text"
                                   placeholder="Enter remarks"
@@ -1993,7 +1993,7 @@ function AccountDataPage() {
                                         </span>
                                       ) : (
                                         <button
-                                          className="text-xs text-purple-600 hover:text-purple-800"
+                                          className="text-xs text-blue-600 hover:text-blue-800"
                                           onClick={() =>
                                             window.open(account.image, "_blank")
                                           }
@@ -2008,8 +2008,8 @@ function AccountDataPage() {
                                     className={`flex items-center cursor-pointer ${
                                       account["col9"]?.toUpperCase() === "YES"
                                         ? "text-red-600 font-medium"
-                                        : "text-purple-600"
-                                    } hover:text-purple-800`}
+                                        : "text-blue-600"
+                                    } hover:text-blue-800`}
                                   >
                                     <Upload className="h-4 w-4 mr-1" />
                                     <span className="text-xs">
@@ -2080,11 +2080,11 @@ function AccountDataPage() {
                           className={`bg-white rounded-lg shadow-md border-2 mb-4 overflow-hidden ${rowColorClass}`}
                         >
                           {/* Header Section with Checkbox and Basic Info */}
-                          <div className="bg-gradient-to-r from-purple-50 to-pink-50 p-3 border-b border-purple-200">
+                          <div className="bg-gradient-to-r from-blue-50 to-pink-50 p-3 border-b border-blue-200">
                             <div className="flex items-start gap-3">
                               <input
                                 type="checkbox"
-                                className="h-5 w-5 mt-1 rounded border-gray-300 text-purple-600 focus:ring-purple-500"
+                                className="h-5 w-5 mt-1 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                                 checked={isSelected}
                                 onChange={(e) =>
                                   handleCheckboxClick(e, account._id)
@@ -2093,7 +2093,7 @@ function AccountDataPage() {
                               <div className="flex-1">
                                 <div className="flex justify-between items-start mb-2">
                                   <div>
-                                    <span className="text-xs font-medium text-purple-600">
+                                    <span className="text-xs font-medium text-blue-600">
                                       Task ID:
                                     </span>
                                     <p className="text-sm font-bold text-gray-900">
@@ -2101,7 +2101,7 @@ function AccountDataPage() {
                                     </p>
                                   </div>
                                   <div className="text-right">
-                                    <span className="text-xs font-medium text-purple-600">
+                                    <span className="text-xs font-medium text-blue-600">
                                       Priority:
                                     </span>
                                     <p className="text-sm font-semibold text-gray-900">
@@ -2258,7 +2258,7 @@ function AccountDataPage() {
                                     e.target.value
                                   )
                                 }
-                                className="border border-gray-300 rounded-lg px-3 py-2 w-full text-sm disabled:bg-gray-100 disabled:cursor-not-allowed focus:ring-2 focus:ring-purple-500"
+                                className="border border-gray-300 rounded-lg px-3 py-2 w-full text-sm disabled:bg-gray-100 disabled:cursor-not-allowed focus:ring-2 focus:ring-blue-500"
                               >
                                 <option value="">Select Status</option>
                                 <option value="Done">Done</option>
@@ -2307,11 +2307,11 @@ function AccountDataPage() {
                                     handleNextTargetDateChange(account._id, "");
                                   }
                                 }}
-                                className="border border-gray-300 rounded-lg px-3 py-2 w-full text-sm disabled:bg-gray-100 disabled:cursor-not-allowed focus:ring-2 focus:ring-purple-500"
+                                className="border border-gray-300 rounded-lg px-3 py-2 w-full text-sm disabled:bg-gray-100 disabled:cursor-not-allowed focus:ring-2 focus:ring-blue-500"
                               />
                             </div>
 
-                            <div className="bg-purple-50 p-2 rounded">
+                            <div className="bg-blue-50 p-2 rounded">
                               <label className="text-xs font-semibold text-gray-700 mb-1 block">
                                 Remarks
                               </label>
@@ -2326,7 +2326,7 @@ function AccountDataPage() {
                                     [account._id]: e.target.value,
                                   }))
                                 }
-                                className="border border-gray-300 rounded-lg px-3 py-2 w-full text-sm disabled:bg-gray-100 disabled:cursor-not-allowed focus:ring-2 focus:ring-purple-500"
+                                className="border border-gray-300 rounded-lg px-3 py-2 w-full text-sm disabled:bg-gray-100 disabled:cursor-not-allowed focus:ring-2 focus:ring-blue-500"
                               />
                             </div>
 
@@ -2360,7 +2360,7 @@ function AccountDataPage() {
                                       </span>
                                     ) : (
                                       <button
-                                        className="text-xs text-purple-600 hover:text-purple-800 font-medium text-left"
+                                        className="text-xs text-blue-600 hover:text-blue-800 font-medium text-left"
                                         onClick={() =>
                                           window.open(account.image, "_blank")
                                         }
@@ -2375,7 +2375,7 @@ function AccountDataPage() {
                                   className={`flex items-center justify-center cursor-pointer border-2 border-dashed rounded-lg p-3 ${
                                     account["col9"]?.toUpperCase() === "YES"
                                       ? "border-red-300 bg-red-50 hover:bg-red-100"
-                                      : "border-purple-300 bg-purple-50 hover:bg-purple-100"
+                                      : "border-blue-300 bg-blue-50 hover:bg-blue-100"
                                   } transition-colors`}
                                 >
                                   <Upload className="h-5 w-5 mr-2" />
@@ -2383,7 +2383,7 @@ function AccountDataPage() {
                                     className={`text-sm font-medium ${
                                       account["col9"]?.toUpperCase() === "YES"
                                         ? "text-red-600"
-                                        : "text-purple-600"
+                                        : "text-blue-600"
                                     }`}
                                   >
                                     {account["col9"]?.toUpperCase() === "YES"

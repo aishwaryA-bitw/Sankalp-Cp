@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { Link, useLocation, useNavigate } from "react-router-dom"
-import { CheckSquare, ClipboardList, Zap, LogOut, Menu, Database, ChevronDown, ChevronRight , CalendarCheck , Star, KeyRound, Video } from 'lucide-react'
+import { CheckSquare, ClipboardList, Zap, LogOut, Menu, Database, ChevronDown, ChevronRight , CalendarCheck , Star, KeyRound, Video, Eye } from 'lucide-react'
 
 export default function AdminLayout({ children, darkMode, toggleDarkMode }) {
   const location = useLocation()
@@ -115,6 +115,13 @@ export default function AdminLayout({ children, darkMode, toggleDarkMode }) {
       active: location.pathname.includes("/dashboard/data"),
       submenu: true,
       showFor: ["admin", "user"] // Show for both roles
+    },
+     {
+      href: "/dashboard/project_view",
+      label: "Project View",
+      icon: Eye,
+      active: location.pathname === "/dashboard/project_view",
+      showFor: ["admin", "user"] // show both
     },
      {
       href: "/dashboard/license",
